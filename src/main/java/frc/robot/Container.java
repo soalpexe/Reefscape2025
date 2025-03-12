@@ -92,7 +92,13 @@ public class Container {
         }
 
         public Pose2d getRobotPose() {
-                return drivetrain.getState().Pose;
+                Pose2d estimate = drivetrain.getState().Pose;
+                
+                return new Pose2d(
+                        estimate.getX(),
+                        estimate.getY(),
+                        drivetrain.getRotation3d().toRotation2d()
+                );
         }
 
         public void updateRobotPose(Pose2d[] estimates) {
@@ -136,10 +142,10 @@ public class Container {
         public Command stow() {
                 return Commands.sequence(
                         Commands.either(
-                                arm.setPosition(Arm.Position.Stow),
                                 arm.setPosition(Arm.Position.Hold_Algae),
+                                arm.setPosition(Arm.Position.Stow),
                                 
-                                () -> mode == Mode.Coral
+                                () -> arm.hasAlgae()
                         ),
                         elevator.setPosition(Elevator.Position.Stow)
                 );
@@ -192,7 +198,7 @@ public class Container {
                                 Commands.either(
                                         arm.outtakeAlgae(-0.4),
                                         Commands.sequence(
-                                                arm.setPosition(Arm.Position.Hold_Algae),
+                                                arm.setPosition(Arm.Position.Start_Throw),
                                                 elevator.setPosition(Elevator.Position.Barge)
                                         ),
 
