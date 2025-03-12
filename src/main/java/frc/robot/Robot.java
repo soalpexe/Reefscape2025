@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.led.CANdle;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
@@ -19,7 +17,6 @@ public class Robot extends TimedRobot {
         ButtonBoard board;
 
         Container container;
-        CANdle lights;
 
         StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault().
                 getStructTopic("Robot Pose", Pose2d.struct).publish();
@@ -39,6 +36,8 @@ public class Robot extends TimedRobot {
 
                 container.getDrivetrain().updateRobotHeight(container.getElevator().getPosition());
                 container.updateRobotPose(container.getVision().getPoseEstimates());
+
+                container.updateLEDs();
 
                 publisher.set(container.getRobotPose());
         }

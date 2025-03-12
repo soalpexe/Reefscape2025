@@ -55,10 +55,10 @@ public class Vision extends SubsystemBase {
 
         PhotonPipelineResult getResult(Camera camera) {
                 switch (camera) {
-                        case FrontLeft: return frontLeft.getAllUnreadResults().getFirst();
-                        case FrontRight: return frontRight.getAllUnreadResults().getFirst();
-                        case BackLeft: return backLeft.getAllUnreadResults().getFirst();
-                        case BackRight: return backRight.getAllUnreadResults().getFirst();
+                        case FrontLeft: return frontLeft.getAllUnreadResults().get(0);
+                        case FrontRight: return frontRight.getAllUnreadResults().get(0);
+                        case BackLeft: return backLeft.getAllUnreadResults().get(0);
+                        case BackRight: return backRight.getAllUnreadResults().get(0);
 
                         default: return null;
                 }

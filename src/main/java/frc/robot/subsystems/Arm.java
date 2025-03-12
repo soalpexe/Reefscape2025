@@ -25,7 +25,7 @@ public class Arm extends SubsystemBase {
         boolean hasAlgae = false;
 
         public enum Position {
-                Stow(2.5),
+                Stow(3),
 
                 Intake_Coral(-0.1),
                 Hold_Algae(21);

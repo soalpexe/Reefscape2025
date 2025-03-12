@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix6.Utils;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -22,6 +23,7 @@ public class Container {
         Elevator elevator;
         Vision vision;
 
+        CANdle lights;
 
         Mode mode;
         Elevator.Position coralLevel;
@@ -53,6 +55,8 @@ public class Container {
                         Constants.Vision.backLeftID, Constants.Vision.backLeftOffset,
                         Constants.Vision.backRightID, Constants.Vision.backRightOffset
                 );
+
+                lights = new CANdle(Constants.lightsID);
 
                 mode = Mode.Coral;
                 coralLevel = Elevator.Position.L2_Coral;
@@ -93,8 +97,13 @@ public class Container {
 
         public void updateRobotPose(Pose2d[] estimates) {
                 for(Pose2d estimate : estimates) {
-                        drivetrain.addVisionMeasurement(estimate, Utils.fpgaToCurrentTime(Timer.getFPGATimestamp()));
+                        if (!estimate.equals(new Pose2d()) && estimate != null) drivetrain.addVisionMeasurement(estimate, Utils.fpgaToCurrentTime(Timer.getFPGATimestamp()));
                 }
+        }
+
+        public void updateLEDs() {
+                if (mode == Mode.Coral) lights.setLEDs(255, 0, 255);
+                else lights.setLEDs(0, 255, 0);
         }
 
         public void modeCoral() {
@@ -176,7 +185,7 @@ public class Container {
                                 Commands.parallel(
                                         arm.setPosition(Arm.Position.Stow),
                                         Commands.sequence(
-                                                Commands.waitSeconds(0.1),
+                                                Commands.waitSeconds(0.5),
                                                 arm.outtakeAlgae(-1)
                                         )
                                 ),

@@ -63,8 +63,8 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                         () -> getState().Speeds,
                         this::driveRobotCentric,
                         new PPHolonomicDriveController(
-                                new PIDConstants(0, 0, 0),
-                                new PIDConstants(0, 0, 0)
+                                new PIDConstants(5, 0, 0),
+                                new PIDConstants(5, 0, 0)
                         ),
                         robotConfig,
                         () -> Utilities.getAlliance() == Alliance.Red,
@@ -113,7 +113,7 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                                 );
 
                                 appliedPerspective = true;
-                        } );
+                        });
                 }
         }
 }

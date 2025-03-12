@@ -56,7 +56,7 @@ public class Constants {
 
                 static SteerFeedbackType feedbackType = SteerFeedbackType.FusedCANcoder;
 
-                static Current slipCurrent = Amps.of(120.0);
+                static Current slipCurrent = Amps.of(80);
 
                 public static double maxSpeed = 4.73;
                 public static double maxAcceleration = 7.3;
@@ -72,8 +72,7 @@ public class Constants {
                 static Voltage driveFriction = Volts.of(0.2);
                 static Voltage steerFriction = Volts.of(0.2);
 
-                static SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> ConstantCreator =
-                new SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>()
+                static SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> ConstantCreator = new SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>()
                         .withDriveMotorGearRatio(driveRatio)
                         .withSteerMotorGearRatio(steerRatio)
                         .withCouplingGearRatio(coupleRatio)
