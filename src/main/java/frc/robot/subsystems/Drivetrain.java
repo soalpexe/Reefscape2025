@@ -15,9 +15,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.PathConstraints;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -90,18 +88,6 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                         .withVelocityY(speeds.vyMetersPerSecond * percentSpeed * antiTipping)
                         .withRotationalRate(speeds.omegaRadiansPerSecond)
                 ));
-        }
-
-        public Command driveToPose(Pose2d targetPose) {
-                return AutoBuilder.pathfindToPose(
-                        targetPose, 
-                        new PathConstraints(
-                                Constants.Drivetrain.maxSpeed, 
-                                Constants.Drivetrain.maxAcceleration, 
-                                Constants.Drivetrain.maxAngularSpeed, 
-                                Constants.Drivetrain.maxAngularAcceleration
-                        )
-                );
         }
 
         @Override

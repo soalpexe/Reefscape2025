@@ -75,7 +75,7 @@ public class Vision extends SubsystemBase {
                 }
         }
 
-        Pose2d getEstimate(Camera camera) {
+        public Pose2d getEstimate(Camera camera) {
                 Pose2d estimate;
                 if (camera == Camera.Front) estimate = Utilities.getAlliance() == Alliance.Red ? LimelightHelpers.getRedPoseEstimate(frontID) : LimelightHelpers.getBluePoseEstimate(frontID);
 
@@ -87,7 +87,7 @@ public class Vision extends SubsystemBase {
                 return estimate;
         }
 
-        public Pose2d[] getPoseEstimates() {
+        public Pose2d[] getEstimates() {
                 Pose2d[] estimates = new Pose2d[] {
                         getEstimate(Camera.Front),
 

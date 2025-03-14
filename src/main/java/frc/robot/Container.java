@@ -101,9 +101,13 @@ public class Container {
                 );
         }
 
+        public void updateRobotPose(Pose2d estimate) {
+                if (Utilities.isValidPose(estimate)) drivetrain.addVisionMeasurement(estimate, Utils.fpgaToCurrentTime(Timer.getFPGATimestamp()));
+        }
+
         public void updateRobotPose(Pose2d[] estimates) {
                 for(Pose2d estimate : estimates) {
-                        if (!estimate.equals(new Pose2d()) && estimate != null) drivetrain.addVisionMeasurement(estimate, Utils.fpgaToCurrentTime(Timer.getFPGATimestamp()));
+                       updateRobotPose(estimate);
                 }
         }
 
@@ -198,8 +202,14 @@ public class Container {
                                 Commands.either(
                                         arm.outtakeAlgae(-0.4),
                                         Commands.sequence(
-                                                arm.setPosition(Arm.Position.Start_Throw),
-                                                elevator.setPosition(Elevator.Position.Barge)
+                                                arm.setPosition(Arm.Position.Hold_Algae),
+                                                Commands.parallel(
+                                                        elevator.setPosition(Elevator.Position.Barge),
+                                                        Commands.sequence(
+                                                                Commands.waitSeconds(0.3),
+                                                                arm.setPosition(Arm.Position.Start_Throw)
+                                                        )
+                                                )
                                         ),
 
                                         () -> Utilities.inTolerance(Elevator.Position.Stow.value - elevator.getPosition(), 0.4)

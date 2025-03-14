@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.ButtonBoard.Action;
+import frc.robot.subsystems.Vision.Camera;
 
 public class Robot extends TimedRobot {
         XboxController controller;
@@ -35,7 +36,7 @@ public class Robot extends TimedRobot {
                 CommandScheduler.getInstance().run();
 
                 container.getDrivetrain().updateRobotHeight(container.getElevator().getPosition());
-                container.updateRobotPose(container.getVision().getPoseEstimates());
+                container.updateRobotPose(container.getVision().getEstimate(Camera.Front));
 
                 container.updateLEDs();
 
@@ -67,12 +68,6 @@ public class Robot extends TimedRobot {
                 if (board.getButtonPressed(Action.Target_Low)) container.targetLow();
                 if (board.getButtonPressed(Action.Target_Medium)) container.targetMedium();
                 if (board.getButtonPressed(Action.Target_High)) container.targetHigh();
-
-                int side = Utilities.getClosestSide(Constants.Vision.centerPoses, container.getRobotPose());
-
-                if (board.getButtonPressed(Action.Align_Left)) container.getDrivetrain().driveToPose(Constants.Vision.leftPoses[side]).schedule();
-                else if (board.getButtonPressed(Action.Align_Right)) container.getDrivetrain().driveToPose(Constants.Vision.rightPoses[side]).schedule();
-                else if (board.getButtonPressed(Action.Align_Center)) container.getDrivetrain().driveToPose(Constants.Vision.centerPoses[side]).schedule();
 
                 else container.drive(controller.getLeftX(), controller.getLeftY(), controller.getRightX()).schedule();
 

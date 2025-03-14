@@ -17,6 +17,10 @@ public class Utilities {
                 return Math.abs(error) < tolerance;
         }
 
+        public static boolean isValidPose(Pose2d pose) {
+                return !pose.equals(new Pose2d()) && pose != null;
+        }
+
         public static int getClosestSide(Pose2d[] centers, Pose2d robotPose) {
                 int closestSide = 0;
                 double leastDist = Double.MAX_VALUE;
