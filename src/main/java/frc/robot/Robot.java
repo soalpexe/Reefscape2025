@@ -78,7 +78,7 @@ public class Robot extends TimedRobot {
 
         @Override
         public void teleopPeriodic() {
-                container.driveJoysticks(controller.getLeftX(), controller.getLeftY(), controller.getRightX());
+                container.driveJoysticks(controller.getLeftX(), controller.getLeftY(), controller.getRightX(), controller.getLeftTriggerAxis() > 0.2);
                 if (controller.getXButtonPressed()) container.getDrivetrain().seedFieldCentric();
 
                 if (board.getButtonPressed(Action.Mode_Coral)) container.modeCoral();

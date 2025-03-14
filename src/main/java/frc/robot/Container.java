@@ -139,14 +139,14 @@ public class Container {
                 algaeLevel = Elevator.Position.High_Algae;
         }
 
-        public Command driveJoysticks(double leftX, double leftY, double rightX) {
+        public Command driveJoysticks(double leftX, double leftY, double rightX, boolean slowed) {
                 ChassisSpeeds speeds = new ChassisSpeeds(
                         -leftY * Constants.Drivetrain.maxSpeed,
                         -leftX * Constants.Drivetrain.maxSpeed,
                         -rightX * Constants.Drivetrain.maxAngularSpeed
                 );
                 
-                Command command = drivetrain.driveSpeeds(speeds).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
+                Command command = drivetrain.driveSpeeds(speeds, slowed).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
                 command.addRequirements(drivetrain);
 
                 return command;

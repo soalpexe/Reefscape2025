@@ -33,7 +33,7 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
         SwerveRequest.FieldCentric fieldCentric;
         AutoFactory autoConfigs;
 
-        double percentSpeed = 1, antiTipping;
+        double percentSpeed;
 
         public Drivetrain(SwerveDrivetrainConstants drivetrainConfigs, SwerveModuleConstants<?, ?, ?>... modules) {
                 super(TalonFX::new, TalonFX::new, CANcoder::new, drivetrainConfigs, modules);
@@ -62,23 +62,22 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
         }
         
         public void updateRobotHeight(double height) {
-                antiTipping = (25 - height) / 25;
+                percentSpeed = (25 - height) / 25;
         }
 
-        public void setControl(ChassisSpeeds speeds) {
+        public void setControl(ChassisSpeeds speeds, boolean slowed) {
+                double velocityX = slowed ? speeds.vxMetersPerSecond * percentSpeed : 0.2;
+                double velocityY = slowed ? speeds.vyMetersPerSecond * percentSpeed : 0.2;
+
                 setControl(fieldCentric
-                        .withVelocityX(speeds.vxMetersPerSecond * percentSpeed * antiTipping)
-                        .withVelocityY(speeds.vyMetersPerSecond * percentSpeed * antiTipping)
+                        .withVelocityX(velocityX)
+                        .withVelocityY(velocityY)
                         .withRotationalRate(speeds.omegaRadiansPerSecond)
                 );
         }
 
-        public Command driveSpeeds(ChassisSpeeds speeds) {
-                return run(() -> setControl(fieldCentric
-                        .withVelocityX(speeds.vxMetersPerSecond * percentSpeed * antiTipping)
-                        .withVelocityY(speeds.vyMetersPerSecond * percentSpeed * antiTipping)
-                        .withRotationalRate(speeds.omegaRadiansPerSecond)
-                ));
+        public Command driveSpeeds(ChassisSpeeds speeds, boolean slowed) {
+                return run(() -> setControl(speeds, slowed));
         }
 
         public void followTrajectory(SwerveSample sample) {
@@ -90,7 +89,7 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                         sample.omega + Constants.Drivetrain.translationPID.calculate(Utilities.getRadians(robotPose), sample.heading)
                 );
 
-                setControl(speeds);
+                setControl(speeds, false);
         }
 
         @Override
