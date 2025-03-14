@@ -21,7 +21,7 @@ public class Elevator extends SubsystemBase {
         public enum Position {
                 Stow(0),
 
-                L2_Coral(6),
+                L2_Coral(5),
                 L3_Coral(11),
                 L4_Coral(22),
 
