@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Vision;
@@ -139,22 +140,20 @@ public class Container {
         }
 
         public Command driveJoysticks(double leftX, double leftY, double rightX) {
-                ChassisSpeeds speeds = new ChassisSpeeds(-leftY * Constants.Drivetrain.maxSpeed, -leftX * Constants.Drivetrain.maxSpeed, -rightX * Constants.Drivetrain.maxAngularSpeed);
-                return drivetrain.driveFieldCentric(speeds);
-        }
-
-        public Command driveToPose(Pose2d target) {
                 ChassisSpeeds speeds = new ChassisSpeeds(
-                        -Constants.Drivetrain.translationPID.calculate(getRobotPose().getX(), target.getX()),
-                        -Constants.Drivetrain.translationPID.calculate(getRobotPose().getY(), target.getY()),
-                        -Constants.Drivetrain.headingPID.calculate(Utilities.getDegrees(getRobotPose()), Utilities.getDegrees(target))
+                        -leftY * Constants.Drivetrain.maxSpeed,
+                        -leftX * Constants.Drivetrain.maxSpeed,
+                        -rightX * Constants.Drivetrain.maxAngularSpeed
                 );
+                
+                Command command = drivetrain.driveSpeeds(speeds).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
+                command.addRequirements(drivetrain);
 
-                return drivetrain.driveFieldCentric(speeds);
+                return command;
         }
 
         public Command stow() {
-                return Commands.sequence(
+                Command command = Commands.sequence(
                         Commands.either(
                                 arm.setPosition(Arm.Position.Hold_Algae),
                                 arm.setPosition(Arm.Position.Stow),
@@ -162,11 +161,14 @@ public class Container {
                                 () -> arm.hasAlgae()
                         ),
                         elevator.setPosition(Elevator.Position.Stow)
-                );
+                ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+                command.addRequirements(arm, elevator);
+
+                return command;
         }
 
         public Command runIntake() {
-                return Commands.sequence(
+                Command command = Commands.sequence(
                         arm.setPosition(Arm.Position.Stow),
                         Commands.either(
                                 Commands.sequence(
@@ -187,11 +189,14 @@ public class Container {
 
                                 () -> mode == Mode.Coral
                         )
-                );
+                ).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
+                command.addRequirements(arm, elevator);
+
+                return command;
         }
 
         public Command runOuttake() {
-                return Commands.either(
+                Command command = Commands.either(
                         Commands.either(
                                 arm.outtakeCoral(),
                                 Commands.sequence(
@@ -226,6 +231,9 @@ public class Container {
                         ),
 
                         () -> mode == Mode.Coral
-                );
+                ).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
+                command.addRequirements(arm, elevator);
+
+                return command;
         }
 }

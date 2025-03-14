@@ -20,8 +20,7 @@ public class Robot extends TimedRobot {
         Container container;
 
         StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault().
-                getStructTopic("Robot Pose", Pose2d.struct).publish();
-                
+                getStructTopic("Robot Pose", Pose2d.struct).publish();         
 
         public Robot() {
                 controller = new XboxController(Constants.controllerID);
@@ -44,7 +43,9 @@ public class Robot extends TimedRobot {
         }
 
         @Override
-        public void autonomousInit() {}
+        public void autonomousInit() {
+                AutoRoutines.leave(container).schedule();
+        }
 
         @Override
         public void autonomousPeriodic() {}
@@ -57,6 +58,8 @@ public class Robot extends TimedRobot {
 
         @Override
         public void teleopPeriodic() {
+                container.driveJoysticks(controller.getLeftX(), controller.getLeftY(), controller.getRightX());
+
                 if (controller.getXButtonPressed()) container.getDrivetrain().seedFieldCentric();
 
                 if (board.getButtonPressed(Action.Mode_Coral)) container.modeCoral();
@@ -68,12 +71,6 @@ public class Robot extends TimedRobot {
                 if (board.getButtonPressed(Action.Target_Low)) container.targetLow();
                 if (board.getButtonPressed(Action.Target_Medium)) container.targetMedium();
                 if (board.getButtonPressed(Action.Target_High)) container.targetHigh();
-
-                if (board.getButtonPressed(Action.Align_Left)) container.driveToPose(Constants.Vision.leftPoses[0]).schedule();
-                if (board.getButtonPressed(Action.Align_Right)) container.driveToPose(Constants.Vision.rightPoses[0]).schedule();
-                if (board.getButtonPressed(Action.Align_Center)) container.driveToPose(Constants.Vision.centerPoses[0]).schedule();
-
-                container.driveJoysticks(controller.getLeftX(), controller.getLeftY(), controller.getRightX()).schedule();
 
                 if (controller.getLeftBumperButtonPressed()) container.runIntake().schedule();
                 if (controller.getRightBumperButtonPressed()) container.runOuttake().schedule();

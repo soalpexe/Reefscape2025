@@ -73,6 +73,7 @@ public class Arm extends SubsystemBase {
                 return new Command() {
                         public void execute() {
                                 pivot.setControl(new MotionMagicExpoVoltage(position.value));
+                                rollers.set(0);
                         }
 
                         public boolean isFinished() {
