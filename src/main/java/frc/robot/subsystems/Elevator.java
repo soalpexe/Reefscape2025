@@ -22,13 +22,15 @@ public class Elevator extends SubsystemBase {
                 Stow(0),
 
                 L2_Coral(6),
-                L3_Coral(12),
+                L3_Coral(11),
                 L4_Coral(22),
 
                 Low_Algae(9),
                 High_Algae(15),
 
-                Barge(22),
+                Start_Barge(18),
+                End_Barge(22),
+
                 Start_Climb(15);
 
                 public double value;

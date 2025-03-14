@@ -209,7 +209,11 @@ public class Container {
                         ),
                         Commands.either(
                                 Commands.parallel(
-                                        arm.setPosition(Arm.Position.Stow),
+                                        Commands.sequence(
+                                                elevator.setPosition(Elevator.Position.End_Barge),
+                                                Commands.waitSeconds(0.2),
+                                                arm.setPosition(Arm.Position.Stow)
+                                        ),
                                         Commands.sequence(
                                                 Commands.waitSeconds(0.5),
                                                 arm.outtakeAlgae(-1)
@@ -220,15 +224,15 @@ public class Container {
                                         Commands.sequence(
                                                 arm.setPosition(Arm.Position.Hold_Algae),
                                                 Commands.sequence(
-                                                        elevator.setPosition(Elevator.Position.Barge),
-                                                        arm.setPosition(Arm.Position.Start_Throw)
+                                                        elevator.setPosition(Elevator.Position.Start_Barge),
+                                                        arm.setPosition(Arm.Position.Start_Barge)
                                                 )
                                         ),
 
                                         () -> Utilities.inTolerance(Elevator.Position.Stow.value - elevator.getPosition(), 0.4)
                                 ),
 
-                                () -> Utilities.inTolerance(Elevator.Position.Barge.value - elevator.getPosition(), 0.4)
+                                () -> Utilities.inTolerance(Elevator.Position.Start_Barge.value - elevator.getPosition(), 0.4)
                         ),
 
                         () -> mode == Mode.Coral

@@ -28,10 +28,10 @@ public class Arm extends SubsystemBase {
                 Stow(3),
 
                 Intake_Coral(-0.1),
-                L4_Coral(9),
+                L4_Coral(6),
 
                 Hold_Algae(21),
-                Start_Throw(26);
+                Start_Barge(26);
 
                 public double value;
 
@@ -97,7 +97,7 @@ public class Arm extends SubsystemBase {
                                 return hasCoral();
                         }
 
-                        public void end(boolean interupted) {
+                        public void end(boolean interrupted) {
                                 rollers.set(0);
                         }
                 };
@@ -118,8 +118,8 @@ public class Arm extends SubsystemBase {
                                 return rollers.getVelocity().getValueAsDouble() < 1 && timer.get() > 2;
                         }
 
-                        public void end(boolean interupted) {
-                                hasAlgae = true;
+                        public void end(boolean interrupted) {
+                                if (!interrupted) hasAlgae = true;
                         }
                 };
         }
@@ -127,7 +127,6 @@ public class Arm extends SubsystemBase {
         public Command outtakeCoral() {
                 return new Command() {
                         public void initialize() {
-                                hasAlgae = false;
                                 timer.reset();
                         }
 
@@ -139,7 +138,7 @@ public class Arm extends SubsystemBase {
                                 return !hasCoral() && timer.get() > 0.5;
                         }
 
-                        public void end(boolean interupted) {
+                        public void end(boolean interrupted) {
                                 rollers.set(0);
                         }
                 };
@@ -159,7 +158,7 @@ public class Arm extends SubsystemBase {
                                 return timer.get() > 1;
                         }
 
-                        public void end(boolean interupted) {
+                        public void end(boolean interrupted) {
                                 hasAlgae = false;
                                 rollers.set(0);
                         }

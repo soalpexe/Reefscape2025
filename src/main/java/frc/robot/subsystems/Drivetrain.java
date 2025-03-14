@@ -62,7 +62,7 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
         }
         
         public void updateRobotHeight(double height) {
-                antiTipping = (30 - height) / 30;
+                antiTipping = (25 - height) / 25;
         }
 
         public void setControl(ChassisSpeeds speeds) {
