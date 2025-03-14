@@ -201,7 +201,8 @@ public class Container {
                                 arm.outtakeCoral(),
                                 Commands.sequence(
                                         arm.setPosition(Arm.Position.Stow),
-                                        elevator.setPosition(coralLevel)
+                                        elevator.setPosition(coralLevel),
+                                        arm.setPosition(coralLevel == Elevator.Position.L4_Coral ? Arm.Position.L4_Coral : Arm.Position.Stow)
                                 ),
                                 
                                 () -> Utilities.inTolerance(coralLevel.value - elevator.getPosition(), 0.4)
@@ -234,6 +235,23 @@ public class Container {
                 ).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
                 command.addRequirements(arm, elevator);
 
+                return command;
+        }
+
+        public Command climb() {
+                Command command = Commands.either(
+                        Commands.sequence(
+                                elevator.setPosition(Elevator.Position.Stow)
+                        ),
+                        Commands.sequence(
+                                arm.setPosition(Arm.Position.Stow),
+                                elevator.setPosition(Elevator.Position.Start_Climb)
+                        ),
+
+                        () -> Utilities.inTolerance(Elevator.Position.Start_Climb.value - elevator.getPosition(), 0.4)
+                ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+                command.addRequirements(arm,  elevator);
+                
                 return command;
         }
 }

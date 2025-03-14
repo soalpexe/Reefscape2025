@@ -9,6 +9,10 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+
+import choreo.auto.AutoFactory;
+import choreo.trajectory.SwerveSample;
+
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -20,12 +24,14 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
+import frc.robot.Utilities;
 
 public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> implements Subsystem {
         static Rotation2d redPerspective = Rotation2d.k180deg, bluePerspective = Rotation2d.kZero;
         boolean appliedPerspective = false;
 
         SwerveRequest.FieldCentric fieldCentric;
+        AutoFactory autoConfigs;
 
         double percentSpeed = 1, antiTipping;
 
@@ -35,6 +41,14 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                 fieldCentric = new SwerveRequest.FieldCentric()
                         .withDeadband(Constants.Drivetrain.maxSpeed * 0.1).withRotationalDeadband(Constants.Drivetrain.maxAngularSpeed * 0.1)
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
+                autoConfigs = new AutoFactory(
+                        this::getRobotPose,
+                        this::resetPose,
+                        this::followTrajectory,
+                        true,
+                        this
+                );
         }
 
         public Pose2d getRobotPose() {
@@ -51,12 +65,32 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                 antiTipping = (30 - height) / 30;
         }
 
+        public void setControl(ChassisSpeeds speeds) {
+                setControl(fieldCentric
+                        .withVelocityX(speeds.vxMetersPerSecond * percentSpeed * antiTipping)
+                        .withVelocityY(speeds.vyMetersPerSecond * percentSpeed * antiTipping)
+                        .withRotationalRate(speeds.omegaRadiansPerSecond)
+                );
+        }
+
         public Command driveSpeeds(ChassisSpeeds speeds) {
                 return run(() -> setControl(fieldCentric
                         .withVelocityX(speeds.vxMetersPerSecond * percentSpeed * antiTipping)
                         .withVelocityY(speeds.vyMetersPerSecond * percentSpeed * antiTipping)
                         .withRotationalRate(speeds.omegaRadiansPerSecond)
                 ));
+        }
+
+        public void followTrajectory(SwerveSample sample) {
+                Pose2d robotPose = getRobotPose();
+
+                ChassisSpeeds speeds = new ChassisSpeeds(
+                        sample.vx + Constants.Drivetrain.translationPID.calculate(robotPose.getX(), sample.x),
+                        sample.vy + Constants.Drivetrain.translationPID.calculate(robotPose.getY(), sample.y),
+                        sample.omega + Constants.Drivetrain.translationPID.calculate(Utilities.getRadians(robotPose), sample.heading)
+                );
+
+                setControl(speeds);
         }
 
         @Override

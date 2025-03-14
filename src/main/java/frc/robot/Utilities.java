@@ -13,8 +13,8 @@ public class Utilities {
                 return DriverStation.getAlliance().get();
         }
 
-        public static double getDegrees(Pose2d pose) {
-                return pose.getRotation().getDegrees();
+        public static double getRadians(Pose2d pose) {
+                return pose.getRotation().getRadians();
         }
 
         public static boolean inTolerance(double error, double tolerance) {
