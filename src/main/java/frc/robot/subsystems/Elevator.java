@@ -28,7 +28,7 @@ public class Elevator extends SubsystemBase {
                 Low_Algae(9),
                 High_Algae(15),
 
-                Barge(25);
+                Barge(22);
 
                 public double value;
 

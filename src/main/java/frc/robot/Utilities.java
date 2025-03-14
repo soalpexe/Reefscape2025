@@ -13,6 +13,10 @@ public class Utilities {
                 return DriverStation.getAlliance().get();
         }
 
+        public static double getDegrees(Pose2d pose) {
+                return pose.getRotation().getDegrees();
+        }
+
         public static boolean inTolerance(double error, double tolerance) {
                 return Math.abs(error) < tolerance;
         }

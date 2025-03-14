@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.*;
 import com.ctre.phoenix6.swerve.*;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.units.measure.*;
@@ -28,6 +29,9 @@ public class Constants {
                 static int backRightDriveID = 1, backRightSteerID = 2, backRightEncoderID = 53;
 
                 static int gyroID = 13;
+
+                public static PIDController translationPID = new PIDController(1.5, 0, 0); 
+                public static PIDController headingPID = new PIDController(0.5, 0, 0); 
 
                 static TalonFXConfiguration driveConfigs = new TalonFXConfiguration();
                 static TalonFXConfiguration steerConfigs = new TalonFXConfiguration().withCurrentLimits(

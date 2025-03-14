@@ -138,8 +138,18 @@ public class Container {
                 algaeLevel = Elevator.Position.High_Algae;
         }
 
-        public Command drive(double leftX, double leftY, double rightX) {
+        public Command driveJoysticks(double leftX, double leftY, double rightX) {
                 ChassisSpeeds speeds = new ChassisSpeeds(-leftY * Constants.Drivetrain.maxSpeed, -leftX * Constants.Drivetrain.maxSpeed, -rightX * Constants.Drivetrain.maxAngularSpeed);
+                return drivetrain.driveFieldCentric(speeds);
+        }
+
+        public Command driveToPose(Pose2d target) {
+                ChassisSpeeds speeds = new ChassisSpeeds(
+                        -Constants.Drivetrain.translationPID.calculate(getRobotPose().getX(), target.getX()),
+                        -Constants.Drivetrain.translationPID.calculate(getRobotPose().getY(), target.getY()),
+                        -Constants.Drivetrain.headingPID.calculate(Utilities.getDegrees(getRobotPose()), Utilities.getDegrees(target))
+                );
+
                 return drivetrain.driveFieldCentric(speeds);
         }
 
@@ -203,12 +213,9 @@ public class Container {
                                         arm.outtakeAlgae(-0.4),
                                         Commands.sequence(
                                                 arm.setPosition(Arm.Position.Hold_Algae),
-                                                Commands.parallel(
+                                                Commands.sequence(
                                                         elevator.setPosition(Elevator.Position.Barge),
-                                                        Commands.sequence(
-                                                                Commands.waitSeconds(0.3),
-                                                                arm.setPosition(Arm.Position.Start_Throw)
-                                                        )
+                                                        arm.setPosition(Arm.Position.Start_Throw)
                                                 )
                                         ),
 

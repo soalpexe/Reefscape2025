@@ -30,7 +30,7 @@ public class Arm extends SubsystemBase {
                 Intake_Coral(-0.1),
                 Hold_Algae(21),
                 
-                Start_Throw(25);
+                Start_Throw(26);
 
                 public double value;
 
@@ -104,6 +104,7 @@ public class Arm extends SubsystemBase {
         public Command intakeAlgae() {
                 return new Command() {
                         public void initialize() {
+                                hasAlgae = false;
                                 timer.reset();
                         }
 

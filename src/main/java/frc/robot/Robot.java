@@ -69,7 +69,11 @@ public class Robot extends TimedRobot {
                 if (board.getButtonPressed(Action.Target_Medium)) container.targetMedium();
                 if (board.getButtonPressed(Action.Target_High)) container.targetHigh();
 
-                else container.drive(controller.getLeftX(), controller.getLeftY(), controller.getRightX()).schedule();
+                if (board.getButtonPressed(Action.Align_Left)) container.driveToPose(Constants.Vision.leftPoses[0]).schedule();
+                if (board.getButtonPressed(Action.Align_Right)) container.driveToPose(Constants.Vision.rightPoses[0]).schedule();
+                if (board.getButtonPressed(Action.Align_Center)) container.driveToPose(Constants.Vision.centerPoses[0]).schedule();
+
+                container.driveJoysticks(controller.getLeftX(), controller.getLeftY(), controller.getRightX()).schedule();
 
                 if (controller.getLeftBumperButtonPressed()) container.runIntake().schedule();
                 if (controller.getRightBumperButtonPressed()) container.runOuttake().schedule();
