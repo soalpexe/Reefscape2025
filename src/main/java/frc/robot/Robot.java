@@ -9,8 +9,10 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.ButtonBoard.Action;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Vision.Camera;
 
 public class Robot extends TimedRobot {
@@ -40,6 +42,24 @@ public class Robot extends TimedRobot {
                 container.updateLEDs();
 
                 publisher.set(container.getRobotPose());
+
+                if (container.getMode() == Container.Mode.Coral) {
+                        SmartDashboard.putBoolean("Low", container.getCoralLevel() == Elevator.Position.L2_Coral);
+                        SmartDashboard.putBoolean("Medium", container.getCoralLevel() == Elevator.Position.L3_Coral);
+                        SmartDashboard.putBoolean("High", container.getCoralLevel() == Elevator.Position.L4_Coral);
+                }
+
+                else {
+                        SmartDashboard.putBoolean("Low", container.getAlgaeLevel() == Elevator.Position.Low_Algae);
+                        SmartDashboard.putBoolean("High", container.getAlgaeLevel() == Elevator.Position.High_Algae);
+
+                        SmartDashboard.putBoolean("Medium", false);
+                }
+
+                SmartDashboard.putBoolean("Has Coral", container.getArm().hasCoral());
+                SmartDashboard.putBoolean("Has Algae", container.getArm().hasAlgae());
+
+                SmartDashboard.updateValues();
         }
 
         @Override
