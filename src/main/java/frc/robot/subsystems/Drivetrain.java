@@ -33,7 +33,7 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
         SwerveRequest.FieldCentric fieldCentric;
         AutoFactory autoConfigs;
 
-        double percentSpeed;
+        double antiTipping;
 
         public Drivetrain(SwerveDrivetrainConstants drivetrainConfigs, SwerveModuleConstants<?, ?, ?>... modules) {
                 super(TalonFX::new, TalonFX::new, CANcoder::new, drivetrainConfigs, modules);
@@ -62,17 +62,17 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
         }
         
         public void updateRobotHeight(double height) {
-                percentSpeed = (25 - height) / 25;
+                antiTipping = (30 - height) / 30;
         }
 
         public void setControl(ChassisSpeeds speeds, boolean slowed) {
-                double velocityX = slowed ? speeds.vxMetersPerSecond * percentSpeed : 0.2;
-                double velocityY = slowed ? speeds.vyMetersPerSecond * percentSpeed : 0.2;
+                double translationSlow = slowed ? 0.15 : antiTipping;
+                double headingSlow = slowed ? 0.5 : antiTipping;
 
                 setControl(fieldCentric
-                        .withVelocityX(velocityX)
-                        .withVelocityY(velocityY)
-                        .withRotationalRate(speeds.omegaRadiansPerSecond)
+                        .withVelocityX(speeds.vxMetersPerSecond * translationSlow)
+                        .withVelocityY(speeds.vyMetersPerSecond * translationSlow)
+                        .withRotationalRate(speeds.omegaRadiansPerSecond * headingSlow)
                 );
         }
 

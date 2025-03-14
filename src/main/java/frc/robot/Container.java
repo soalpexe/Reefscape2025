@@ -145,8 +145,9 @@ public class Container {
                         -leftX * Constants.Drivetrain.maxSpeed,
                         -rightX * Constants.Drivetrain.maxAngularSpeed
                 );
+                Command command = drivetrain.driveSpeeds(speeds, slowed)
                 
-                Command command = drivetrain.driveSpeeds(speeds, slowed).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
+                .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
                 command.addRequirements(drivetrain);
 
                 return command;
@@ -161,7 +162,8 @@ public class Container {
                                 () -> arm.hasAlgae()
                         ),
                         elevator.setPosition(Elevator.Position.Stow)
-                ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+                )
+                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
                 command.addRequirements(arm, elevator);
 
                 return command;
@@ -179,17 +181,16 @@ public class Container {
                                         ),
                                         arm.setPosition(Arm.Position.Stow)
                                 ),
-                                Commands.sequence(
-                                        Commands.parallel(
-                                                arm.setPosition(Arm.Position.Hold_Algae),
-                                                elevator.setPosition(algaeLevel),
-                                                arm.intakeAlgae()
-                                        )
+                                Commands.parallel(
+                                        arm.setPosition(Arm.Position.Hold_Algae),
+                                        elevator.setPosition(algaeLevel),
+                                        arm.intakeAlgae()
                                 ),
 
                                 () -> mode == Mode.Coral
                         )
-                ).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
+                )
+                .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
                 command.addRequirements(arm, elevator);
 
                 return command;
@@ -209,11 +210,8 @@ public class Container {
                         ),
                         Commands.either(
                                 Commands.parallel(
-                                        Commands.sequence(
-                                                elevator.setPosition(Elevator.Position.End_Barge),
-                                                Commands.waitSeconds(0.2),
-                                                arm.setPosition(Arm.Position.Stow)
-                                        ),
+                                        elevator.setPosition(Elevator.Position.End_Barge),
+                                        arm.setPosition(Arm.Position.Stow),
                                         Commands.sequence(
                                                 Commands.waitSeconds(0.5),
                                                 arm.outtakeAlgae(-1)
@@ -223,10 +221,8 @@ public class Container {
                                         arm.outtakeAlgae(-0.4),
                                         Commands.sequence(
                                                 arm.setPosition(Arm.Position.Hold_Algae),
-                                                Commands.sequence(
-                                                        elevator.setPosition(Elevator.Position.Start_Barge),
-                                                        arm.setPosition(Arm.Position.Start_Barge)
-                                                )
+                                                elevator.setPosition(Elevator.Position.Start_Barge),
+                                                arm.setPosition(Arm.Position.Start_Barge)
                                         ),
 
                                         () -> Utilities.inTolerance(Elevator.Position.Stow.value - elevator.getPosition(), 0.4)
@@ -236,7 +232,8 @@ public class Container {
                         ),
 
                         () -> mode == Mode.Coral
-                ).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
+                )
+                .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
                 command.addRequirements(arm, elevator);
 
                 return command;
@@ -253,7 +250,8 @@ public class Container {
                         ),
 
                         () -> Utilities.inTolerance(Elevator.Position.Start_Climb.value - elevator.getPosition(), 0.4)
-                ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+                )
+                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
                 command.addRequirements(arm,  elevator);
                 
                 return command;
