@@ -27,8 +27,7 @@ public class Container {
         CANdle lights;
 
         Mode mode;
-        Elevator.Position coralLevel;
-        Elevator.Position algaeLevel;
+        Elevator.Position coralLevel, algaeLevel;
 
         public enum Mode {
                 Coral,

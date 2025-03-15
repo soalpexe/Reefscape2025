@@ -17,8 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utilities;
 
 public class Arm extends SubsystemBase {
-        TalonFX pivot;
-        TalonFX rollers;
+        TalonFX pivot, rollers;
         CANrange distance;
 
         Timer timer;
