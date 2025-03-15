@@ -186,13 +186,10 @@ public class Container {
                                         ),
                                         arm.setPosition(Arm.Position.Stow)
                                 ),
-                                Commands.sequence(
-                                        Commands.parallel(
-                                                arm.setPosition(Arm.Position.Intake_Algae),
-                                                elevator.setPosition(algaeLevel),
-                                                arm.intakeAlgae()
-                                        ),
-                                        arm.setPosition(Arm.Position.Hold_Algae)
+                                Commands.parallel(
+                                        arm.setPosition(Arm.Position.Intake_Algae),
+                                        elevator.setPosition(algaeLevel),
+                                        arm.intakeAlgae()
                                 ),
 
                                 () -> mode == Mode.Coral
@@ -229,14 +226,14 @@ public class Container {
                                         arm.outtakeAlgae(-0.4),
                                         Commands.sequence(
                                                 arm.setPosition(Arm.Position.Hold_Algae),
-                                                elevator.setPosition(Elevator.Position.Start_Barge),
+                                                elevator.setPosition(Elevator.Position.High_Algae),
                                                 arm.setPosition(Arm.Position.Start_Barge)
                                         ),
 
                                         () -> Utilities.inTolerance(Elevator.Position.Stow.value - elevator.getPosition(), 0.4)
                                 ),
 
-                                () -> Utilities.inTolerance(Elevator.Position.Start_Barge.value - elevator.getPosition(), 0.4)
+                                () -> Utilities.inTolerance(Elevator.Position.High_Algae.value - elevator.getPosition(), 0.4)
                         ),
 
                         () -> mode == Mode.Coral

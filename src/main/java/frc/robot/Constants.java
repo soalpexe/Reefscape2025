@@ -148,7 +148,7 @@ public class Constants {
         }
 
         public class Vision {
-                public static String frontID = "limelight-front";
+                public static String frontID = "limelight";
 
                 public static String frontLeftID = "photonvision-frontLeft", frontRightID = "photonvision-frontRight",backLeftID = "photonvision-backLeft",backRightID = "photonvision-backRight";
                 public static Transform3d frontLeftOffset = new Transform3d(), frontRightOffset = new Transform3d(), backLeftOffset = new Transform3d(), backRightOffset = new Transform3d();

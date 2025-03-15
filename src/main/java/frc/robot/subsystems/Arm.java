@@ -29,7 +29,7 @@ public class Arm extends SubsystemBase {
                 Intake_Coral(-0.1),
                 L4_Coral(6),
 
-                Intake_Algae(24),
+                Intake_Algae(25),
                 Hold_Algae(21),
                 Start_Barge(27);
 
@@ -167,6 +167,6 @@ public class Arm extends SubsystemBase {
 
         @Override
         public void periodic() {
-                if (hasAlgae && !hasCoral()) rollers.set(0.2);
+                if (hasAlgae && !hasCoral()) rollers.set(0.3);
         }
 }
