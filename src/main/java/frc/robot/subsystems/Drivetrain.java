@@ -80,6 +80,10 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                 return run(() -> setControl(speeds, slowed));
         }
 
+        public Command driveSpeeds(ChassisSpeeds speeds) {
+                return run(() -> setControl(speeds, false));
+        }
+
         public void followTrajectory(SwerveSample sample) {
                 Pose2d robotPose = getRobotPose();
 

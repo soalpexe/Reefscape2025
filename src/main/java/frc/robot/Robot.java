@@ -21,8 +21,19 @@ public class Robot extends TimedRobot {
 
         Container container;
 
-        StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault().
-                getStructTopic("Robot Pose", Pose2d.struct).publish();         
+        Pose2d leftTarget, rightTarget, centerTarget;
+
+        StructPublisher<Pose2d> robotPublisher = NetworkTableInstance.getDefault().
+                getStructTopic("Robot Pose", Pose2d.struct).publish();
+
+        StructPublisher<Pose2d> leftPublisher = NetworkTableInstance.getDefault().
+                getStructTopic("Left Target", Pose2d.struct).publish();    
+
+        StructPublisher<Pose2d> rightPublisher = NetworkTableInstance.getDefault().
+                getStructTopic("Right Target", Pose2d.struct).publish();    
+
+        StructPublisher<Pose2d> centerPublisher = NetworkTableInstance.getDefault().
+                getStructTopic("Center Target", Pose2d.struct).publish();    
 
         public Robot() {
                 controller = new XboxController(Constants.controllerID);
@@ -37,11 +48,20 @@ public class Robot extends TimedRobot {
                 CommandScheduler.getInstance().run();
 
                 container.getDrivetrain().updateRobotHeight(container.getElevator().getPosition());
-                container.updateRobotPose(container.getVision().getEstimate(Camera.Front));
-
                 container.updateLEDs();
 
-                publisher.set(container.getRobotPose());
+                container.updateRobotPose(container.getVision().getEstimate(Camera.Front));
+                int side = Utilities.getClosestSide(Constants.Vision.centerPoses, container.getDrivetrain().getRobotPose());
+
+                leftTarget = Constants.Vision.leftPoses[side];
+                rightTarget = Constants.Vision.rightPoses[side];
+                centerTarget = Constants.Vision.centerPoses[side];
+
+                robotPublisher.set(container.getDrivetrain().getRobotPose());
+
+                leftPublisher.set(leftTarget);
+                rightPublisher.set(rightTarget);
+                centerPublisher.set(centerTarget);
 
                 if (container.getMode() == Container.Mode.Coral) {
                         SmartDashboard.putBoolean("Low", container.getCoralLevel() == Elevator.Position.L2_Coral);
@@ -78,7 +98,17 @@ public class Robot extends TimedRobot {
 
         @Override
         public void teleopPeriodic() {
-                container.driveJoysticks(controller.getLeftX(), controller.getLeftY(), controller.getRightX(), controller.getLeftTriggerAxis() > 0.2);
+                if (board.getButton(Action.Align_Left)) container.driveToPose(leftTarget);
+                if (board.getButton(Action.Align_Right)) container.driveToPose(rightTarget);
+                if (board.getButton(Action.Align_Center)) container.driveToPose(centerTarget);
+
+                container.driveJoysticks(
+                        controller.getLeftX(),
+                        controller.getLeftY(),
+                        controller.getRightX(),
+                        controller.getLeftTriggerAxis() > 0.2
+                ).schedule();
+
                 if (controller.getXButtonPressed()) container.getDrivetrain().seedFieldCentric();
 
                 if (board.getButtonPressed(Action.Mode_Coral)) container.modeCoral();

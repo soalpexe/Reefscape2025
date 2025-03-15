@@ -92,16 +92,6 @@ public class Container {
                 return algaeLevel;
         }
 
-        public Pose2d getRobotPose() {
-                Pose2d estimate = drivetrain.getState().Pose;
-                
-                return new Pose2d(
-                        estimate.getX(),
-                        estimate.getY(),
-                        drivetrain.getRotation3d().toRotation2d()
-                );
-        }
-
         public void updateRobotPose(Pose2d estimate) {
                 if (Utilities.isValidPose(estimate)) drivetrain.addVisionMeasurement(estimate, Utils.fpgaToCurrentTime(Timer.getFPGATimestamp()));
         }
@@ -148,6 +138,22 @@ public class Container {
                 Command command = drivetrain.driveSpeeds(speeds, slowed)
                 
                 .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
+                command.addRequirements(drivetrain);
+
+                return command;
+        }
+
+        public Command driveToPose(Pose2d targetPose) {
+                Pose2d robotPose = drivetrain.getRobotPose();
+
+                ChassisSpeeds speeds = new ChassisSpeeds(
+                        Constants.Drivetrain.translationPID.calculate(robotPose.getX(), targetPose.getX()),
+                        Constants.Drivetrain.translationPID.calculate(robotPose.getY(), targetPose.getY()),
+                        Constants.Drivetrain.headingPID.calculate(Utilities.getRadians(robotPose), Utilities.getRadians(targetPose))
+                );
+                Command command = drivetrain.driveSpeeds(speeds)
+
+                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
                 command.addRequirements(drivetrain);
 
                 return command;

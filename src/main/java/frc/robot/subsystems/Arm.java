@@ -119,7 +119,7 @@ public class Arm extends SubsystemBase {
                         }
 
                         public void end(boolean interrupted) {
-                                if (!interrupted) hasAlgae = true;
+                                hasAlgae = !interrupted;
                         }
                 };
         }

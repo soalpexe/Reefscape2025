@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 public class AutoRoutines {
         public static Command leave(Container container) {
                 return Commands.race(
-                        container.getDrivetrain().driveSpeeds(new ChassisSpeeds(-1, 0, 0), false),
+                        container.getDrivetrain().driveSpeeds(new ChassisSpeeds(-1, 0, 0)),
                         Commands.waitSeconds(0.8)
                 );
         }
