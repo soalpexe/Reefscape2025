@@ -23,6 +23,8 @@ public class Constants {
 
         public static String canivoreID = "*";
 
+        public static double deadband = 0.1;
+
         public class Drivetrain {
                 static int frontLeftDriveID = 5, frontLeftSteerID = 6, frontLeftEncoderID = 52;
                 static int frontRightDriveID = 3, frontRightSteerID = 4, frontRightEncoderID = 51;
@@ -31,6 +33,7 @@ public class Constants {
 
                 static int gyroID = 13;
 
+                public static Rotation2d redPerspective = Rotation2d.k180deg, bluePerspective = Rotation2d.kZero;
                 public static PIDController translationPID = new PIDController(10, 0, 0); 
                 public static PIDController headingPID = new PIDController(5, 0, 0); 
 
@@ -151,7 +154,7 @@ public class Constants {
                 public static Transform3d frontLeftOffset = new Transform3d(), frontRightOffset = new Transform3d(), backLeftOffset = new Transform3d(), backRightOffset = new Transform3d();
 
                 public static Pose2d[] leftPoses = new Pose2d[] {
-                        new Pose2d(2.6, 3.88, new Rotation2d(0))
+                        new Pose2d(2.6, 4.2, new Rotation2d(0))
                 };
 
                 public static Pose2d[] rightPoses = new Pose2d[] {
@@ -159,7 +162,7 @@ public class Constants {
                 };
 
                 public static Pose2d[] centerPoses = new Pose2d[] {
-                        new Pose2d(2.6, 4.2, new Rotation2d(0))
+                        new Pose2d(2.6, 3.88, new Rotation2d(0))
                 };
         }
 

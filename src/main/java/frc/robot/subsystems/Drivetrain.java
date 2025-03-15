@@ -17,7 +17,6 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -27,20 +26,18 @@ import frc.robot.Constants;
 import frc.robot.Utilities;
 
 public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> implements Subsystem {
-        static Rotation2d redPerspective = Rotation2d.k180deg, bluePerspective = Rotation2d.kZero;
-        boolean appliedPerspective = false;
-
         SwerveRequest.FieldCentric fieldCentric;
         AutoFactory autoConfigs;
 
-        double deadband =  0.1, antiTipping;
+        boolean appliedPerspective = false;
+        double antiTipping = 1;
 
         public Drivetrain(SwerveDrivetrainConstants drivetrainConfigs, SwerveModuleConstants<?, ?, ?>... modules) {
                 super(TalonFX::new, TalonFX::new, CANcoder::new, drivetrainConfigs, modules);
 
                 fieldCentric = new SwerveRequest.FieldCentric()
-                        .withDeadband(Constants.Drivetrain.maxSpeed * 0.1)
-                        .withRotationalDeadband(Constants.Drivetrain.maxAngularSpeed * 0.1)
+                        .withDeadband(Constants.Drivetrain.maxSpeed * Constants.deadband)
+                        .withRotationalDeadband(Constants.Drivetrain.maxAngularSpeed * Constants.deadband)
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
                 autoConfigs = new AutoFactory(
@@ -103,7 +100,7 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                 if (!appliedPerspective || DriverStation.isDisabled()) {
                         DriverStation.getAlliance().ifPresent(allianceColor -> {
                                 setOperatorPerspectiveForward(
-                                        allianceColor == Alliance.Red ? redPerspective : bluePerspective
+                                        allianceColor == Alliance.Red ? Constants.Drivetrain.redPerspective : Constants.Drivetrain.bluePerspective
                                 );
 
                                 appliedPerspective = true;
