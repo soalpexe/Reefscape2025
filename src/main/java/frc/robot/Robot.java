@@ -98,9 +98,9 @@ public class Robot extends TimedRobot {
 
         @Override
         public void teleopPeriodic() {
-                if (board.getButton(Action.Align_Left)) container.driveToPose(leftTarget);
-                if (board.getButton(Action.Align_Right)) container.driveToPose(rightTarget);
-                if (board.getButton(Action.Align_Center)) container.driveToPose(centerTarget);
+                if (board.getButton(Action.Align_Left)) container.driveToPose(leftTarget).schedule();
+                if (board.getButton(Action.Align_Right)) container.driveToPose(rightTarget).schedule();
+                if (board.getButton(Action.Align_Center)) container.driveToPose(centerTarget).schedule();
 
                 container.driveJoysticks(
                         controller.getLeftX(),

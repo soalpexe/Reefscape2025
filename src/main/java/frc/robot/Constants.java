@@ -32,7 +32,7 @@ public class Constants {
                 static int gyroID = 13;
 
                 public static PIDController translationPID = new PIDController(10, 0, 0); 
-                public static PIDController headingPID = new PIDController(10, 0, 0); 
+                public static PIDController headingPID = new PIDController(5, 0, 0); 
 
                 static TalonFXConfiguration driveConfigs = new TalonFXConfiguration();
                 static TalonFXConfiguration steerConfigs = new TalonFXConfiguration().withCurrentLimits(

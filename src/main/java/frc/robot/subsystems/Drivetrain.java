@@ -33,13 +33,14 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
         SwerveRequest.FieldCentric fieldCentric;
         AutoFactory autoConfigs;
 
-        double antiTipping;
+        double deadband =  0.1, antiTipping;
 
         public Drivetrain(SwerveDrivetrainConstants drivetrainConfigs, SwerveModuleConstants<?, ?, ?>... modules) {
                 super(TalonFX::new, TalonFX::new, CANcoder::new, drivetrainConfigs, modules);
 
                 fieldCentric = new SwerveRequest.FieldCentric()
-                        .withDeadband(Constants.Drivetrain.maxSpeed * 0.1).withRotationalDeadband(Constants.Drivetrain.maxAngularSpeed * 0.1)
+                        .withDeadband(Constants.Drivetrain.maxSpeed * 0.1)
+                        .withRotationalDeadband(Constants.Drivetrain.maxAngularSpeed * 0.1)
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
                 autoConfigs = new AutoFactory(
@@ -60,10 +61,6 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                         getRotation3d().toRotation2d()
                 );
         }
-        
-        public void updateRobotHeight(double height) {
-                antiTipping = (30 - height) / 30;
-        }
 
         public void setControl(ChassisSpeeds speeds, boolean slowed) {
                 double translationSlow = slowed ? 0.15 : antiTipping;
@@ -77,11 +74,12 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
         }
 
         public Command driveSpeeds(ChassisSpeeds speeds, boolean slowed) {
-                return run(() -> setControl(speeds, slowed));
+                return run(() -> setControl(speeds, slowed))
+                .until(() -> true);
         }
 
         public Command driveSpeeds(ChassisSpeeds speeds) {
-                return run(() -> setControl(speeds, false));
+                return driveSpeeds(speeds, false);
         }
 
         public void followTrajectory(SwerveSample sample) {
@@ -94,6 +92,10 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                 );
 
                 setControl(speeds, false);
+        }
+
+        public void updateRobotHeight(double height) {
+                antiTipping = (30 - height) / 30;
         }
 
         @Override

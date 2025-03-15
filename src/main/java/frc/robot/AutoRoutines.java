@@ -10,9 +10,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 
 public class AutoRoutines {
         public static Command leave(Container container) {
-                return Commands.race(
+                return Commands.sequence(
                         container.getDrivetrain().driveSpeeds(new ChassisSpeeds(-1, 0, 0)),
-                        Commands.waitSeconds(0.8)
+                        Commands.waitSeconds(5),
+                        container.getDrivetrain().driveSpeeds(new ChassisSpeeds())
                 );
         }
 }

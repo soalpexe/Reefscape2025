@@ -18,9 +18,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LimelightHelpers {
-        private static final Map<String, DoubleArrayEntry> arrayEntries = new ConcurrentHashMap<>();
+        static Map<String, DoubleArrayEntry> arrayEntries = new ConcurrentHashMap<>();
 
-        static class LimelightResults {
+        class LimelightResults {
                 String error;
 
                 @JsonProperty("pID")
@@ -53,7 +53,7 @@ public class LimelightHelpers {
                 }
         }
 
-        static class RawFiducial {
+        class RawFiducial {
                 int id = 0;
                 double txnc = 0;
                 double tync = 0;
@@ -76,7 +76,7 @@ public class LimelightHelpers {
         static ObjectMapper mapper;
         static boolean profileJSON = false;
 
-        static final String getName(String name) {
+        static String getName(String name) {
                 if (name == "" || name == null) {
                         return "limelight";
                 }
@@ -95,12 +95,16 @@ public class LimelightHelpers {
                 );
         }
 
-        public static NetworkTable getNT(String tableName) {
-                return NetworkTableInstance.getDefault().getTable(getName(tableName));
+        static void flushNT() {
+                NetworkTableInstance.getDefault().flush();
         }
 
-        public static void flushNT() {
-                NetworkTableInstance.getDefault().flush();
+        static String getJSONDump(String limelightName) {
+                return getNTString(limelightName, "json");
+        }
+
+        public static NetworkTable getNT(String tableName) {
+                return NetworkTableInstance.getDefault().getTable(getName(tableName));
         }
 
         public static NetworkTableEntry getNTEntry(String tableName, String entryName) {
@@ -126,10 +130,6 @@ public class LimelightHelpers {
 
         public static String getNTString(String tableName, String entryName) {
                 return getNTEntry(tableName, entryName).getString("");
-        }
-
-        public static String getJSONDump(String limelightName) {
-                return getNTString(limelightName, "json");
         }
 
         public static Pose2d getBluePoseEstimate(String limelightName) {
