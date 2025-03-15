@@ -13,6 +13,7 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.units.measure.*;
 
@@ -150,15 +151,15 @@ public class Constants {
                 public static Transform3d frontLeftOffset = new Transform3d(), frontRightOffset = new Transform3d(), backLeftOffset = new Transform3d(), backRightOffset = new Transform3d();
 
                 public static Pose2d[] leftPoses = new Pose2d[] {
-
+                        new Pose2d(2.6, 3.88, new Rotation2d(0))
                 };
 
                 public static Pose2d[] rightPoses = new Pose2d[] {
-
+                        new Pose2d(2.6, 4, new Rotation2d(0))
                 };
 
                 public static Pose2d[] centerPoses = new Pose2d[] {
-
+                        new Pose2d(2.6, 4.2, new Rotation2d(0))
                 };
         }
 
