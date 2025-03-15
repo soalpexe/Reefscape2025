@@ -55,7 +55,7 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                 return new Pose2d(
                         estimate.getX(),
                         estimate.getY(),
-                        getRotation3d().toRotation2d()
+                        getPigeon2().getRotation2d()
                 );
         }
 

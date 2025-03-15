@@ -18,10 +18,9 @@ import frc.robot.Utilities;
 
 public class Arm extends SubsystemBase {
         TalonFX pivot, rollers;
-        CANrange distance;
+        CANrange coralRange, algaeRange;
 
         Timer timer;
-        boolean hasAlgae = false;
 
         public enum Position {
                 Stow(3),
@@ -30,7 +29,7 @@ public class Arm extends SubsystemBase {
                 L4_Coral(6),
 
                 Intake_Algae(25),
-                Hold_Algae(21),
+                Processor(21),
                 Start_Barge(27);
 
                 public double value;
@@ -40,11 +39,12 @@ public class Arm extends SubsystemBase {
                 }
         }
 
-        public Arm(int pivotID, int rollersID, int distanceID) {
+        public Arm(int pivotID, int rollersID, int coralRangeID, int algaeRangeID) {
                 pivot = new TalonFX(pivotID);
                 rollers = new TalonFX(rollersID);
 
-                distance = new CANrange(distanceID);
+                coralRange = new CANrange(coralRangeID);
+                algaeRange = new CANrange(algaeRangeID);
 
                 TalonFXConfiguration config = new TalonFXConfiguration();
                 config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
@@ -58,16 +58,14 @@ public class Arm extends SubsystemBase {
 
                 timer = new Timer();
                 timer.start();
-
-                hasAlgae = false;
         }
 
         public boolean hasCoral() {
-                return distance.getIsDetected(true).getValue();
+                return coralRange.getIsDetected(true).getValue();
         }
 
         public boolean hasAlgae() {
-                return hasAlgae;
+                return algaeRange.getIsDetected(true).getValue();
         }
 
         public Command setPosition(Position position) {
@@ -85,10 +83,6 @@ public class Arm extends SubsystemBase {
 
         public Command intakeCoral() {
                 return new Command() {
-                        public void initialize() {
-                                hasAlgae = false;
-                        }
-
                         public void execute() {
                                 rollers.set(-0.6);
                         }
@@ -106,7 +100,6 @@ public class Arm extends SubsystemBase {
         public Command intakeAlgae() {
                 return new Command() {
                         public void initialize() {
-                                hasAlgae = false;
                                 timer.reset();
                         }
 
@@ -116,10 +109,6 @@ public class Arm extends SubsystemBase {
 
                         public boolean isFinished() {
                                 return rollers.getVelocity().getValueAsDouble() < 1 && timer.get() > 2;
-                        }
-
-                        public void end(boolean interrupted) {
-                                hasAlgae = !interrupted;
                         }
                 };
         }
@@ -159,7 +148,6 @@ public class Arm extends SubsystemBase {
                         }
 
                         public void end(boolean interrupted) {
-                                hasAlgae = false;
                                 rollers.set(0);
                         }
                 };
@@ -167,6 +155,6 @@ public class Arm extends SubsystemBase {
 
         @Override
         public void periodic() {
-                if (hasAlgae && !hasCoral()) rollers.set(0.3);
+                if (hasAlgae() && !hasCoral()) rollers.set(0.2);
         }
 }

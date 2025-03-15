@@ -44,7 +44,7 @@ public class Container {
                         Constants.Drivetrain.backRightConfigs
                 );
 
-                arm = new Arm(Constants.Arm.pivotID, Constants.Arm.rollersID, Constants.Arm.distanceID);
+                arm = new Arm(Constants.Arm.pivotID, Constants.Arm.rollersID, Constants.Arm.coralRangeID, Constants.Arm.algaeRangeID);
                 elevator = new Elevator(Constants.Elevator.leftID, Constants.Elevator.rightID, Constants.canivoreID);
 
                 vision = new Vision(
@@ -161,7 +161,7 @@ public class Container {
         public Command stow() {
                 Command command = Commands.sequence(
                         Commands.either(
-                                arm.setPosition(Arm.Position.Hold_Algae),
+                                arm.setPosition(Arm.Position.Processor),
                                 arm.setPosition(Arm.Position.Stow),
                                 
                                 () -> arm.hasAlgae()
@@ -225,7 +225,7 @@ public class Container {
                                 Commands.either(
                                         arm.outtakeAlgae(-0.4),
                                         Commands.sequence(
-                                                arm.setPosition(Arm.Position.Hold_Algae),
+                                                arm.setPosition(Arm.Position.Processor),
                                                 elevator.setPosition(Elevator.Position.High_Algae),
                                                 arm.setPosition(Arm.Position.Start_Barge)
                                         ),
