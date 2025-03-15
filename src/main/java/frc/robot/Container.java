@@ -187,10 +187,13 @@ public class Container {
                                         ),
                                         arm.setPosition(Arm.Position.Stow)
                                 ),
-                                Commands.parallel(
-                                        arm.setPosition(Arm.Position.Hold_Algae),
-                                        elevator.setPosition(algaeLevel),
-                                        arm.intakeAlgae()
+                                Commands.sequence(
+                                        Commands.parallel(
+                                                arm.setPosition(Arm.Position.Intake_Algae),
+                                                elevator.setPosition(algaeLevel),
+                                                arm.intakeAlgae()
+                                        ),
+                                        arm.setPosition(Arm.Position.Hold_Algae)
                                 ),
 
                                 () -> mode == Mode.Coral

@@ -30,8 +30,9 @@ public class Arm extends SubsystemBase {
                 Intake_Coral(-0.1),
                 L4_Coral(6),
 
+                Intake_Algae(24),
                 Hold_Algae(21),
-                Start_Barge(26);
+                Start_Barge(27);
 
                 public double value;
 
