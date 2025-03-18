@@ -68,10 +68,6 @@
     "exp":"19.25 in",
     "val":0.48895
    }
-  },
-  "differentialTrackWidth":{
-   "exp":"22 in",
-   "val":0.5588
   }
  },
  "generationFeatures":[]

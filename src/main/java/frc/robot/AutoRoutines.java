@@ -12,8 +12,25 @@ public class AutoRoutines {
         public static Command leave(Container container) {
                 return Commands.sequence(
                         container.getDrivetrain().driveSpeeds(new ChassisSpeeds(-1, 0, 0)),
-                        Commands.waitSeconds(5),
+                        Commands.waitSeconds(3),
                         container.getDrivetrain().driveSpeeds(new ChassisSpeeds())
+                );
+        }
+
+        public static Command left3Coral(Container container) {
+                return Commands.sequence(
+                        container.getDrivetrain().startTrajectory("1-CL"),
+
+                        container.getDrivetrain().followTrajectory("1-CL"),
+                        container.runAutoOuttake(),
+                        container.getDrivetrain().followTrajectory("CL-SL"),
+                        container.runIntake(),
+                        container.getDrivetrain().followTrajectory("SL-BL"),
+                        container.runAutoOuttake(),
+                        container.getDrivetrain().followTrajectory("BL-SL"),
+                        container.runIntake(),
+                        container.getDrivetrain().followTrajectory("SL-BR"),
+                        container.runAutoOuttake()
                 );
         }
 }

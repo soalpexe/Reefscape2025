@@ -104,7 +104,7 @@ public class Arm extends SubsystemBase {
                         }
 
                         public void execute() {
-                                rollers.set(0.6);
+                                rollers.set(0.8);
                         }
 
                         public boolean isFinished() {
@@ -144,7 +144,7 @@ public class Arm extends SubsystemBase {
                         }
 
                         public boolean isFinished() {
-                                return timer.get() > 1;
+                                return timer.get() > 0.5;
                         }
 
                         public void end(boolean interrupted) {
@@ -155,6 +155,6 @@ public class Arm extends SubsystemBase {
 
         @Override
         public void periodic() {
-                if (hasAlgae() && !hasCoral()) rollers.set(0.2);
+                if (hasAlgae() && !hasCoral()) rollers.set(0.4);
         }
 }

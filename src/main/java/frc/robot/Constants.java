@@ -34,8 +34,8 @@ public class Constants {
                 static int gyroID = 13;
 
                 public static Rotation2d redPerspective = Rotation2d.k180deg, bluePerspective = Rotation2d.kZero;
-                public static PIDController translationPID = new PIDController(15, 0, 0); 
-                public static PIDController headingPID = new PIDController(5, 0, 0); 
+                public static PIDController translationPID = new PIDController(10, 0, 0); 
+                public static PIDController headingPID = new PIDController(2, 0, 0); 
 
                 static TalonFXConfiguration driveConfigs = new TalonFXConfiguration();
                 static TalonFXConfiguration steerConfigs = new TalonFXConfiguration().withCurrentLimits(
@@ -140,7 +140,7 @@ public class Constants {
 
         public class Arm {
                 public static int pivotID = 30, rollersID = 41;
-                public static int coralRangeID = 32, algaeRangeID = 0;
+                public static int coralRangeID = 32, algaeRangeID = 33;
         }
 
         public class Elevator {

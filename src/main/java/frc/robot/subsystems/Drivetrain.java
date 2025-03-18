@@ -27,7 +27,7 @@ import frc.robot.Utilities;
 
 public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> implements Subsystem {
         SwerveRequest.FieldCentric fieldCentric;
-        AutoFactory autoConfigs;
+        AutoFactory autoFactory;
 
         boolean appliedPerspective = false;
         double antiTipping = 1;
@@ -40,10 +40,10 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                         .withRotationalDeadband(Constants.Drivetrain.maxAngularSpeed * Constants.deadband)
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-                autoConfigs = new AutoFactory(
+                autoFactory = new AutoFactory(
                         this::getRobotPose,
                         this::resetPose,
-                        this::followTrajectory,
+                        this::driveSample,
                         true,
                         this
                 );
@@ -79,7 +79,7 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                 return driveSpeeds(speeds, false);
         }
 
-        public void followTrajectory(SwerveSample sample) {
+        public void driveSample(SwerveSample sample) {
                 Pose2d robotPose = getRobotPose();
 
                 ChassisSpeeds speeds = new ChassisSpeeds(
@@ -93,6 +93,14 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
 
         public void updateRobotHeight(double height) {
                 antiTipping = (30 - height) / 30;
+        }
+
+        public Command startTrajectory(String trajectory) {
+                return autoFactory.resetOdometry(trajectory);
+        }
+
+        public Command followTrajectory(String trajectory) {
+                return autoFactory.trajectoryCmd(trajectory);
         }
 
         @Override

@@ -92,7 +92,15 @@ public class Container {
         }
 
         public void updateRobotPose(Pose2d estimate) {
-                if (Utilities.isValidPose(estimate)) drivetrain.addVisionMeasurement(estimate, Utils.fpgaToCurrentTime(Timer.getFPGATimestamp()));
+                if (Utilities.isValidPose(estimate)) {
+                        Pose2d pose = new Pose2d(
+                                estimate.getX(),
+                                estimate.getY(),
+                                drivetrain.getPigeon2().getRotation2d()
+                        );
+
+                        drivetrain.addVisionMeasurement(pose, Utils.fpgaToCurrentTime(Timer.getFPGATimestamp()));
+                }
         }
 
         public void updateRobotPose(Pose2d[] estimates) {
@@ -106,26 +114,66 @@ public class Container {
                 else lights.setLEDs(0, 255, 0);
         }
 
-        public void modeCoral() {
-                mode = Mode.Coral;
+        public Command modeCoral() {
+                return new Command() {
+                        public void initialize() {
+                                mode = Mode.Coral;
+                        }
+
+                        public boolean isFinished() {
+                                return true;
+                        }
+                };
         }
 
-        public void modeAlgae() {
-                mode = Mode.Algae;
+        public Command modeAlgae() {
+                return new Command() {
+                        public void initialize() {
+                                mode = Mode.Algae;
+                        }
+
+                        public boolean isFinished() {
+                                return true;
+                        }
+                };
         }
 
-        public void targetLow() {
-                coralLevel = Elevator.Position.L2_Coral;
-                algaeLevel = Elevator.Position.Low_Algae;
+        public Command targetLow() {
+                return new Command() {
+                        public void initialize() {
+                                coralLevel = Elevator.Position.L2_Coral;
+                                algaeLevel = Elevator.Position.Low_Algae;
+                        }
+
+                        public boolean isFinished() {
+                                return true;
+                        }
+                };
         }
 
-        public void targetMedium() {
-                coralLevel = Elevator.Position.L3_Coral;
+        public Command targetMedium() {
+                return new Command() {
+                        public void initialize() {
+                                coralLevel = Elevator.Position.L3_Coral;
+                        }
+
+                        public boolean isFinished() {
+                                return true;
+                        }
+                };
         }
 
-        public void targetHigh() {
-                coralLevel = Elevator.Position.L4_Coral;
-                algaeLevel = Elevator.Position.High_Algae;
+        public Command targetHigh() {
+                return new Command() {
+                        public void initialize() {
+                                coralLevel = Elevator.Position.L4_Coral;
+                                algaeLevel = Elevator.Position.High_Algae;
+                        }
+
+                        public boolean isFinished() {
+                                return true;
+                        }
+                };
         }
 
         public Command driveJoysticks(double leftX, double leftY, double rightX, boolean slowed) {
@@ -201,7 +249,7 @@ public class Container {
                 return command;
         }
 
-        public Command runOuttake() {
+        public Command runTeleOuttake() {
                 Command command = Commands.either(
                         Commands.either(
                                 arm.outtakeCoral(),
@@ -223,9 +271,8 @@ public class Container {
                                         )
                                 ),
                                 Commands.either(
-                                        arm.outtakeAlgae(-0.4),
+                                        arm.outtakeAlgae(-0.6),
                                         Commands.sequence(
-                                                arm.setPosition(Arm.Position.Processor),
                                                 elevator.setPosition(Elevator.Position.High_Algae),
                                                 arm.setPosition(Arm.Position.Start_Barge)
                                         ),
@@ -244,21 +291,27 @@ public class Container {
                 return command;
         }
 
-        public Command climb() {
+        public Command runAutoOuttake() {
                 Command command = Commands.either(
                         Commands.sequence(
-                                elevator.setPosition(Elevator.Position.Stow)
+                                arm.setPosition(Arm.Position.Stow),
+                                elevator.setPosition(coralLevel),
+                                arm.setPosition(coralLevel == Elevator.Position.L4_Coral ? Arm.Position.L4_Coral : Arm.Position.Stow),
+                                Commands.waitSeconds(0.3),
+                                arm.outtakeCoral()
                         ),
                         Commands.sequence(
-                                arm.setPosition(Arm.Position.Stow),
-                                elevator.setPosition(Elevator.Position.Start_Climb)
+                                arm.setPosition(Arm.Position.Processor),
+                                elevator.setPosition(Elevator.Position.Stow),
+                                Commands.waitSeconds(0.3),
+                                arm.outtakeAlgae(-0.6)
                         ),
 
-                        () -> Utilities.inTolerance(Elevator.Position.Start_Climb.value - elevator.getPosition(), 0.4)
+                        () -> mode == Mode.Coral
                 )
-                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-                command.addRequirements(arm,  elevator);
-                
+                .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
+                command.addRequirements(arm, elevator);
+
                 return command;
         }
 }
