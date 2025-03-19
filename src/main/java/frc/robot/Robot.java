@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import choreo.auto.AutoChooser;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
@@ -27,15 +28,20 @@ public class Robot extends TimedRobot {
         Pose2d leftTarget, rightTarget, centerTarget;
 
         Timer timer;
+        AutoChooser autoChooser;
 
         public Robot() {
                 controller = new XboxController(Constants.controllerID);
                 board = new ButtonBoard(Constants.boardID);
-
                 container = new Container();
 
                 field = new Field2d();
+
                 timer = new Timer();
+                autoChooser = new AutoChooser();
+
+                autoChooser.addCmd("Leave", () -> AutoRoutines.leave(container));
+                autoChooser.addCmd("Left 3 Coral", () -> AutoRoutines.left3Coral(container));
         }
 
         @Override
@@ -53,12 +59,12 @@ public class Robot extends TimedRobot {
                 centerTarget = Constants.Vision.centerPoses[side];
 
                 Pose2d robotPose = container.getDrivetrain().getRobotPose();
-
                 field.setRobotPose(
                         robotPose.getX(),
                         robotPose.getY(),
                         robotPose.getRotation()
                 );
+
                 SmartDashboard.putData(CommandScheduler.getInstance());
                 SmartDashboard.putData("Robot Pose", field);
 
@@ -84,6 +90,8 @@ public class Robot extends TimedRobot {
                 SmartDashboard.putBoolean("Has Coral", container.getArm().hasCoral());
                 SmartDashboard.putBoolean("Has Algae", container.getArm().hasAlgae());
 
+                SmartDashboard.putData("Auto Chooser", autoChooser);
+
                 SmartDashboard.updateValues();
 
                 if (timer.hasElapsed(5)) {
@@ -96,7 +104,7 @@ public class Robot extends TimedRobot {
         public void autonomousInit() {
                 CommandScheduler.getInstance().cancelAll();
                 
-                AutoRoutines.left3Coral(container).schedule();
+                autoChooser.selectedCommand().schedule();
         }
 
         @Override

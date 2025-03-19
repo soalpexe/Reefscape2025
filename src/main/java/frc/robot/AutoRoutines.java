@@ -23,11 +23,23 @@ public class AutoRoutines {
 
                         container.getDrivetrain().followTrajectory("1-CL"),
                         container.runAutoOuttake(),
-                        container.getDrivetrain().followTrajectory("CL-SL"),
+                        Commands.parallel(
+                                container.getDrivetrain().followTrajectory("CL-SL"),
+                                Commands.sequence(
+                                        Commands.waitSeconds(0.5),
+                                        container.stow()
+                                )
+                        ),
                         container.runIntake(),
                         container.getDrivetrain().followTrajectory("SL-BL"),
                         container.runAutoOuttake(),
-                        container.getDrivetrain().followTrajectory("BL-SL"),
+                        Commands.parallel(
+                                container.getDrivetrain().followTrajectory("BL-SL"),
+                                Commands.sequence(
+                                        Commands.waitSeconds(0.5),
+                                        container.stow()
+                                )
+                        ),
                         container.runIntake(),
                         container.getDrivetrain().followTrajectory("SL-BR"),
                         container.runAutoOuttake()
