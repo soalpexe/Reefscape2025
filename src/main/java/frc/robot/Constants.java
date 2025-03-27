@@ -12,9 +12,7 @@ import com.ctre.phoenix6.swerve.*;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.units.measure.*;
 
 public class Constants {
@@ -148,29 +146,10 @@ public class Constants {
         }
 
         public class Vision {
-                public static String frontID = "limelight";
-
-                public static String frontLeftID = "photonvision-frontLeft", frontRightID = "photonvision-frontRight",backLeftID = "photonvision-backLeft",backRightID = "photonvision-backRight";
-                public static Transform3d frontLeftOffset = new Transform3d(), frontRightOffset = new Transform3d(), backLeftOffset = new Transform3d(), backRightOffset = new Transform3d();
-
-                public static Pose2d[] leftPoses = new Pose2d[] {
-                        new Pose2d(2.6, 4.2, new Rotation2d(0))
-                };
-
-                public static Pose2d[] rightPoses = new Pose2d[] {
-                        new Pose2d(2.6, 4.04, new Rotation2d(0))
-                };
-
-                public static Pose2d[] centerPoses = new Pose2d[] {
-                        new Pose2d(2.6, 3.88, new Rotation2d(0))
-                };
+                public static String leftID, rightID;
         }
 
         public class Climber {
-                public static int climberID = 0;
-        }
-
-        public class Led {
-                public static int ledID = 0;
+                public static int winchID = 60;
         }
 }

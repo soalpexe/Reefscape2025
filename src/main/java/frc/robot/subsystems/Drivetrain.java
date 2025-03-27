@@ -8,7 +8,6 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
@@ -23,11 +22,14 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.Constants;
 import frc.robot.Utilities;
 
 public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> implements Subsystem {
         SwerveRequest.FieldCentric fieldCentric;
+        SwerveRequest.RobotCentric robotCentric;
+        
         AutoFactory autoFactory;
 
         boolean appliedPerspective = false;
@@ -38,8 +40,11 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
 
                 fieldCentric = new SwerveRequest.FieldCentric()
                         .withDeadband(Constants.Drivetrain.maxSpeed * Constants.deadband)
-                        .withRotationalDeadband(Constants.Drivetrain.maxAngularSpeed * Constants.deadband)
-                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+                        .withRotationalDeadband(Constants.Drivetrain.maxAngularSpeed * Constants.deadband);
+
+                robotCentric = new SwerveRequest.RobotCentric()
+                        .withDeadband(Constants.Drivetrain.maxSpeed * Constants.deadband)
+                        .withRotationalDeadband(Constants.Drivetrain.maxAngularSpeed * Constants.deadband);
 
                 autoFactory = new AutoFactory(
                         this::getRobotPose,
@@ -60,7 +65,11 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                 );
         }
 
-        public void setControl(ChassisSpeeds speeds, boolean slowed) {
+        public void updateRobotHeight(double height) {
+                antiTipping = (30 - height) / 30;
+        }
+
+        public void setFieldControl(ChassisSpeeds speeds, boolean slowed) {
                 double translationSlow = slowed ? 0.15 : antiTipping;
                 double headingSlow = slowed ? 0.5 : antiTipping;
 
@@ -71,8 +80,19 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                 );
         }
 
+        public void setRobotControl(ChassisSpeeds speeds, boolean slowed) {
+                double translationSlow = slowed ? 0.15 : antiTipping;
+                double headingSlow = slowed ? 0.5 : antiTipping;
+
+                setControl(robotCentric
+                        .withVelocityX(speeds.vxMetersPerSecond * translationSlow)
+                        .withVelocityY(speeds.vyMetersPerSecond * translationSlow)
+                        .withRotationalRate(speeds.omegaRadiansPerSecond * headingSlow)
+                );
+        }
+
         public Command driveSpeeds(ChassisSpeeds speeds, boolean slowed) {
-                return run(() -> setControl(speeds, slowed))
+                return run(() -> setFieldControl(speeds, slowed))
                 .until(() -> true);
         }
 
@@ -89,11 +109,24 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                         sample.omega + Constants.Drivetrain.translationPID.calculate(Utilities.getRadians(robotPose), sample.heading)
                 );
 
-                setControl(speeds, false);
+                setFieldControl(speeds, false);
         }
 
-        public void updateRobotHeight(double height) {
-                antiTipping = (30 - height) / 30;
+        public Command alignTag(double offsetX, double offsetY) {
+                Pose2d robotPose = getRobotPose();
+
+                ChassisSpeeds speeds = new ChassisSpeeds(
+                        Constants.Drivetrain.translationPID.calculate(robotPose.getX(), offsetX),
+                        Constants.Drivetrain.translationPID.calculate(robotPose.getY(), offsetY),
+                        Constants.Drivetrain.translationPID.calculate(Utilities.getRadians(robotPose), 0)
+                );
+                Command command = run(() -> setRobotControl(speeds, false))
+                .until(() -> true)
+
+                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+                command.addRequirements(this);
+
+                return command;
         }
 
         public Command startTrajectory(String trajectory) {

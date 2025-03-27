@@ -23,7 +23,7 @@ public class Arm extends SubsystemBase {
         Timer timer;
 
         public enum Position {
-                Stow(3),
+                Stow(3.5),
 
                 Intake_Coral(-0.1),
                 L4_Coral(6),

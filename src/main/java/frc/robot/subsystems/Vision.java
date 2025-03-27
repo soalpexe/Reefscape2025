@@ -4,97 +4,64 @@
 
 package frc.robot.subsystems;
 
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.targeting.PhotonPipelineResult;
-
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.Utilities;
 
 public class Vision extends SubsystemBase {
-        String frontID;
-
-        PhotonCamera frontLeft, frontRight, backLeft, backRight;
-        Transform3d frontLeftOffset, frontRightOffset, backLeftOffset, backRightOffset;
-        
-        AprilTagFieldLayout tagLayout;
-        PhotonPoseEstimator estimator;
+        String leftID, rightID;
 
         public enum Camera {
-                Front,
-
-                FrontLeft,
-                FrontRight,
-                BackLeft,
-                BackRight
+                Left,
+                Right
         }
 
-        public Vision(String frontID, String frontLeftID, Transform3d frontLeftOffset, String frontRightID, Transform3d frontRightOffset, String backLeftID, Transform3d backLeftOffset, String backRightID, Transform3d backRightOffset) {
-                this.frontID = frontID;
-
-                frontLeft = new PhotonCamera(frontLeftID);
-                frontRight = new PhotonCamera(frontRightID);
-                backLeft = new PhotonCamera(backLeftID);
-                backRight = new PhotonCamera(backRightID);
-
-                this.frontLeftOffset = frontLeftOffset;
-                this.frontRightOffset = frontRightOffset;
-                this.backLeftOffset = backLeftOffset;
-                this.backRightOffset = backRightOffset;
-
-                tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
-                estimator = new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, null);
+        public Vision(String leftID, String rightID) {
+                this.leftID = leftID;
+                this.rightID = rightID;
         }
 
-        PhotonPipelineResult getResult(Camera camera) {
+        String toString(Camera camera) {
                 switch (camera) {
-                        case FrontLeft: return frontLeft.getAllUnreadResults().get(0);
-                        case FrontRight: return frontRight.getAllUnreadResults().get(0);
-                        case BackLeft: return backLeft.getAllUnreadResults().get(0);
-                        case BackRight: return backRight.getAllUnreadResults().get(0);
+                        case Left: return leftID;
+                        case Right: return rightID;
 
                         default: return null;
                 }
         }
 
-        Transform3d getOffset(Camera camera) {
-                switch (camera) {
-                        case FrontLeft: return frontLeftOffset;
-                        case FrontRight: return frontRightOffset;
-                        case BackLeft: return  backLeftOffset;
-                        case BackRight: return backRightOffset;
+        public double getOffsetX(Camera camera) {
+                String cameraID = toString(camera);
+                return Math.tan(Math.toRadians(LimelightHelpers.getNTEntry(cameraID, "tx").getDouble(0))) * getOffsetY(camera);
+        }
 
-                        default: return null;
-                }
+        public double getOffsetY(Camera camera) {
+                String cameraID = toString(camera);
+                return 3.5 / Math.tan(Math.toRadians(32 + LimelightHelpers.getNTEntry(cameraID, "ty").getDouble(0)));
+        }
+
+        public double getTagID() {
+                double leftTagID = LimelightHelpers.getNTEntry(leftID, "tid").getDouble(-1);
+                double rightTagID = LimelightHelpers.getNTEntry(rightID, "tid").getDouble(-1);
+
+                return leftTagID != -1 ? leftTagID : rightTagID;
         }
 
         public Pose2d getEstimate(Camera camera) {
-                Pose2d estimate;
-                if (camera == Camera.Front) estimate = Utilities.getAlliance() == Alliance.Red ? LimelightHelpers.getRedPoseEstimate(frontID) : LimelightHelpers.getBluePoseEstimate(frontID);
+                String cameraID = toString(camera);
 
-                else {
-                        estimator.setRobotToCameraTransform(getOffset(camera));
-                        estimate = estimator.update(getResult(camera)).get().estimatedPose.toPose2d();
-                }
+                Pose2d redEstimate = LimelightHelpers.getRedPoseEstimate(cameraID);
+                Pose2d blueEstimate = LimelightHelpers.getBluePoseEstimate(cameraID);
 
-                return estimate;
+                return Utilities.getAlliance() == Alliance.Red ? redEstimate : blueEstimate;
         }
 
         public Pose2d[] getEstimates() {
                 Pose2d[] estimates = new Pose2d[] {
-                        getEstimate(Camera.Front),
-
-                        getEstimate(Camera.FrontLeft),
-                        getEstimate(Camera.FrontRight),
-                        getEstimate(Camera.BackLeft),
-                        getEstimate(Camera.BackRight),
+                        getEstimate(Camera.Left),
+                        getEstimate(Camera.Right)
                 };
 
                 return estimates;

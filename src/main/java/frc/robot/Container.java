@@ -16,13 +16,16 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Arm;
 
 public class Container {
         Drivetrain drivetrain;
+        
         Arm arm;
         Elevator elevator;
         Vision vision;
+        Climber climber;
 
         CANdle lights;
 
@@ -46,15 +49,8 @@ public class Container {
 
                 arm = new Arm(Constants.Arm.pivotID, Constants.Arm.rollersID, Constants.Arm.coralRangeID, Constants.Arm.algaeRangeID);
                 elevator = new Elevator(Constants.Elevator.leftID, Constants.Elevator.rightID, Constants.canivoreID);
-
-                vision = new Vision(
-                        Constants.Vision.frontID,
-
-                        Constants.Vision.frontLeftID, Constants.Vision.frontLeftOffset,
-                        Constants.Vision.frontRightID, Constants.Vision.frontRightOffset,
-                        Constants.Vision.backLeftID, Constants.Vision.backLeftOffset,
-                        Constants.Vision.backRightID, Constants.Vision.backRightOffset
-                );
+                vision = new Vision(Constants.Vision.leftID, Constants.Vision.rightID);
+                climber = new Climber(Constants.Climber.winchID);
 
                 lights = new CANdle(Constants.lightsID);
 
@@ -190,22 +186,6 @@ public class Container {
                 return command;
         }
 
-        public Command driveToPose(Pose2d targetPose) {
-                Pose2d robotPose = drivetrain.getRobotPose();
-
-                ChassisSpeeds speeds = new ChassisSpeeds(
-                        Constants.Drivetrain.translationPID.calculate(robotPose.getX(), targetPose.getX()),
-                        Constants.Drivetrain.translationPID.calculate(robotPose.getY(), targetPose.getY()),
-                        Constants.Drivetrain.headingPID.calculate(Utilities.getRadians(robotPose), Utilities.getRadians(targetPose))
-                );
-                Command command = drivetrain.driveSpeeds(speeds)
-
-                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-                command.addRequirements(drivetrain);
-
-                return command;
-        }
-
         public Command stow() {
                 Command command = Commands.sequence(
                         Commands.either(
@@ -313,5 +293,14 @@ public class Container {
                 command.addRequirements(arm, elevator);
 
                 return command;
+        }
+
+        public Command climb() {
+                return Commands.either(
+                        climber.setPosition(Climber.Position.Deploy),
+                        climber.setPosition(Climber.Position.Stow),
+
+                        () -> Utilities.inTolerance(Climber.Position.Stow.value - elevator.getPosition(), 0.2)
+                );
         }
 }
