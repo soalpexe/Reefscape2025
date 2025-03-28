@@ -32,21 +32,23 @@ public class Vision extends SubsystemBase {
                 }
         }
 
+        public int getTagID(Camera camera) {
+                String cameraID = toString(camera);
+                return (int)LimelightHelpers.getNTEntry(cameraID, "tid").getInteger(-1);
+        }
+
         public double getOffsetX(Camera camera) {
                 String cameraID = toString(camera);
-                return Math.tan(Math.toRadians(LimelightHelpers.getNTEntry(cameraID, "tx").getDouble(0))) * getOffsetY(camera);
+                double offset = Math.tan(Math.toRadians(LimelightHelpers.getNTEntry(cameraID, "tx").getDouble(0))) * getOffsetY(camera);
+
+                return getTagID(camera) != -1 ? offset : 0;
         }
 
         public double getOffsetY(Camera camera) {
                 String cameraID = toString(camera);
-                return 3.5 / Math.tan(Math.toRadians(32 + LimelightHelpers.getNTEntry(cameraID, "ty").getDouble(0)));
-        }
+                double offset = 3.5 / Math.tan(Math.toRadians(32 + LimelightHelpers.getNTEntry(cameraID, "ty").getDouble(0)));
 
-        public double getTagID() {
-                double leftTagID = LimelightHelpers.getNTEntry(leftID, "tid").getDouble(-1);
-                double rightTagID = LimelightHelpers.getNTEntry(rightID, "tid").getDouble(-1);
-
-                return leftTagID != -1 ? leftTagID : rightTagID;
+                return getTagID(camera) != -1 ? offset : 0;
         }
 
         public Pose2d getEstimate(Camera camera) {

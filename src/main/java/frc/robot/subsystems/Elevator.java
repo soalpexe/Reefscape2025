@@ -64,7 +64,7 @@ public class Elevator extends SubsystemBase {
                         }
                         
                         public boolean isFinished() {
-                                return Utilities.inTolerance(position.value - left.getPosition().getValueAsDouble(), 0.4);
+                                return Utilities.inTolerance(position.value - getPosition(), 0.4);
                         }
                 };
         }

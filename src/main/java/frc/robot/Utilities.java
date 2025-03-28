@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
@@ -25,21 +26,13 @@ public class Utilities {
                 return !pose.equals(new Pose2d()) && pose != null;
         }
 
-        public static int getClosestSide(Pose2d[] centers, Pose2d robotPose) {
-                int closestSide = 0;
-                double leastDist = Double.MAX_VALUE;
+        public static Rotation2d toHeading(int tag) {
+                if (tag == 8) return new Rotation2d(60);
+                if (tag == 9) return new Rotation2d(120);
+                if (tag == 10) return new Rotation2d(180);
+                if (tag == 11) return new Rotation2d(-120);
+                if (tag == 12) return new Rotation2d(-60);
 
-                for (int side = 0; side < centers.length; side++) {
-                        Pose2d center = centers[side];
-
-                        double distance = Math.hypot(center.getX() - robotPose.getX(), center.getY() - robotPose.getY());
-
-                        if (distance < leastDist) {
-                                closestSide = side;
-                                leastDist = distance;
-                        }
-                }
-
-                return closestSide;
+                return new Rotation2d(0); 
         }
 }

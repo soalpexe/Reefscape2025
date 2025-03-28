@@ -19,7 +19,7 @@ public class Climber extends SubsystemBase {
 
         public enum Position {
                 Stow(0),
-                Deploy(4);
+                Deploy(20);
 
                 public double value;
                 
@@ -37,7 +37,13 @@ public class Climber extends SubsystemBase {
 
                 config.Slot0.kP = 10;
 
+                config.MotionMagic.MotionMagicCruiseVelocity = 20;
+                config.MotionMagic.MotionMagicAcceleration = 30;
                 winch.getConfigurator().apply(config);
+        }
+
+        public double getPosition() {
+                return winch.getPosition().getValueAsDouble();
         }
 
         public Command setPosition(Position position) {
@@ -47,7 +53,7 @@ public class Climber extends SubsystemBase {
                         }
 
                         public boolean isFinished() {
-                                return Utilities.inTolerance(position.value - winch.getPosition().getValueAsDouble(), 0.2);
+                                return Utilities.inTolerance(position.value - getPosition(), 0.2);
                         }
                 };
         }

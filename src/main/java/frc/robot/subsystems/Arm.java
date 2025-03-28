@@ -60,6 +60,10 @@ public class Arm extends SubsystemBase {
                 timer.start();
         }
 
+        public double getPosition() {
+                return pivot.getPosition().getValueAsDouble();
+        }
+
         public boolean hasCoral() {
                 return coralRange.getIsDetected(true).getValue();
         }
@@ -76,7 +80,7 @@ public class Arm extends SubsystemBase {
                         }
 
                         public boolean isFinished() {
-                                return Utilities.inTolerance(position.value - pivot.getPosition().getValueAsDouble(), 0.2);
+                                return Utilities.inTolerance(position.value - getPosition(), 0.2);
                         }
                 };
         }

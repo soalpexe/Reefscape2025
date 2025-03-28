@@ -112,13 +112,13 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                 setFieldControl(speeds, false);
         }
 
-        public Command alignTag(double offsetX, double offsetY) {
+        public Command alignTag(double offsetX, double offsetY, int tagID) {
                 Pose2d robotPose = getRobotPose();
 
                 ChassisSpeeds speeds = new ChassisSpeeds(
                         Constants.Drivetrain.translationPID.calculate(robotPose.getX(), offsetX),
                         Constants.Drivetrain.translationPID.calculate(robotPose.getY(), offsetY),
-                        Constants.Drivetrain.translationPID.calculate(Utilities.getRadians(robotPose), 0)
+                        Constants.Drivetrain.translationPID.calculate(Utilities.getRadians(robotPose), Utilities.toHeading(tagID).getRadians())
                 );
                 Command command = run(() -> setRobotControl(speeds, false))
                 .until(() -> true)

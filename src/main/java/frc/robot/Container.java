@@ -300,7 +300,7 @@ public class Container {
                         climber.setPosition(Climber.Position.Deploy),
                         climber.setPosition(Climber.Position.Stow),
 
-                        () -> Utilities.inTolerance(Climber.Position.Stow.value - elevator.getPosition(), 0.2)
+                        () -> Utilities.inTolerance(Climber.Position.Stow.value - climber.getPosition(), 0.2)
                 );
         }
 }

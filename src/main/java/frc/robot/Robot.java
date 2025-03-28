@@ -84,8 +84,8 @@ public class Robot extends TimedRobot {
 
         @Override
         public void teleopPeriodic() {
-                if (controller.getLeftTriggerAxis() > 0.9) container.getDrivetrain().alignTag(leftOffsetX, leftOffsetY).schedule();
-                if (controller.getRightTriggerAxis() > 0.9) container.getDrivetrain().alignTag(rightOffsetX, rightOffsetY).schedule();
+                if (controller.getLeftTriggerAxis() > 0.9) container.getDrivetrain().alignTag(leftOffsetX, leftOffsetY, container.getVision().getTagID(Camera.Left)).schedule();
+                if (controller.getRightTriggerAxis() > 0.9) container.getDrivetrain().alignTag(rightOffsetX, rightOffsetY, container.getVision().getTagID(Camera.Right)).schedule();
 
                 container.driveJoysticks(
                         controller.getLeftX(),
