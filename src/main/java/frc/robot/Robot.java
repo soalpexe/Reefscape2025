@@ -63,12 +63,6 @@ public class Robot extends TimedRobot {
         }
 
         @Override
-        public void autonomousPeriodic() {}
-
-        @Override
-        public void autonomousExit() {}
-
-        @Override
         public void teleopInit() {
                 scheduler.cancelAll();
         }
@@ -109,7 +103,4 @@ public class Robot extends TimedRobot {
                 if (controller.getLeftBumperButtonPressed()) container.runIntake().schedule();
                 if (controller.getRightBumperButtonPressed()) container.runTeleOuttake().schedule();
         }
-
-        @Override
-        public void teleopExit() {}
 }
