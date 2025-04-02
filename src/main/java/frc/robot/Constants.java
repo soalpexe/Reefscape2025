@@ -65,9 +65,9 @@ public class Constants {
                 static Current slipCurrent = Amps.of(80);
 
                 public static double maxSpeed = 4.73;
-                public static double maxAcceleration = 7.3;
-                public static double maxAngularSpeed = 7.07;
-                public static double maxAngularAcceleration = 28.42;
+                public static double maxAcceleration = 9.81;
+                public static double maxAngularSpeed = 8.24;
+                public static double maxAngularAcceleration = 38.8;
 
                 static double coupleRatio = 3.5714285714285716;
                 static double driveRatio = 6.746031746031747;

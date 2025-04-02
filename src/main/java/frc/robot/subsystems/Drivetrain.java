@@ -129,14 +129,10 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                 return command;
         }
 
-        public Command startTrajectory(String trajectory) {
-                return autoFactory.resetOdometry(trajectory);
-        }
-
         public Command followTrajectory(String trajectory) {
                 return Commands.sequence(
-                        autoFactory.trajectoryCmd(trajectory),
-                        driveSpeeds(new ChassisSpeeds())
+                        autoFactory.resetOdometry(trajectory),
+                        autoFactory.trajectoryCmd(trajectory)
                 );
         }
 

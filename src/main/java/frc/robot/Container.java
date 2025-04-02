@@ -50,7 +50,7 @@ public class Container {
                 arm = new Arm(Constants.Arm.pivotID, Constants.Arm.rollersID, Constants.Arm.coralRangeID, Constants.Arm.algaeRangeID);
                 elevator = new Elevator(Constants.Elevator.leftID, Constants.Elevator.rightID, Constants.canivoreID);
                 vision = new Vision(Constants.Vision.leftID, Constants.Vision.rightID);
-                climber = new Climber(Constants.Climber.winchID);
+                climber = new Climber(Constants.Climber.winchID, Constants.canivoreID);
 
                 lights = new CANdle(Constants.lightsID);
 

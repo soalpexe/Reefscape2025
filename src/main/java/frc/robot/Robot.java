@@ -24,9 +24,6 @@ public class Robot extends TimedRobot {
         Timer timer;
         AutoChooser autoChooser;
 
-        double leftOffsetX, leftOffsetY;
-        double rightOffsetX, rightOffsetY;
-
         public Robot() {
                 scheduler = CommandScheduler.getInstance();
 
@@ -57,12 +54,6 @@ public class Robot extends TimedRobot {
                         System.gc();
                         timer.reset();
                 }
-                
-                leftOffsetX = container.getVision().getOffsetX(Camera.Left);
-                leftOffsetX = container.getVision().getOffsetY(Camera.Left);
-
-                rightOffsetX = container.getVision().getOffsetX(Camera.Right);
-                rightOffsetX = container.getVision().getOffsetY(Camera.Right);
         }
 
         @Override
@@ -84,8 +75,17 @@ public class Robot extends TimedRobot {
 
         @Override
         public void teleopPeriodic() {
-                if (controller.getLeftTriggerAxis() > 0.9) container.getDrivetrain().alignTag(leftOffsetX, leftOffsetY, container.getVision().getTagID(Camera.Left)).schedule();
-                if (controller.getRightTriggerAxis() > 0.9) container.getDrivetrain().alignTag(rightOffsetX, rightOffsetY, container.getVision().getTagID(Camera.Right)).schedule();
+                if (controller.getPOV() == 270) container.getDrivetrain().alignTag(
+                        container.getVision().getOffsetX(Camera.Right),
+                        container.getVision().getOffsetY(Camera.Right),
+                        container.getVision().getTagID(Camera.Right)
+                ).schedule();
+
+                if (controller.getPOV() == 90) container.getDrivetrain().alignTag(
+                        container.getVision().getOffsetX(Camera.Left),
+                        container.getVision().getOffsetY(Camera.Left),
+                        container.getVision().getTagID(Camera.Left)
+                ).schedule();
 
                 container.driveJoysticks(
                         controller.getLeftX(),
