@@ -19,7 +19,7 @@ public class Climber extends SubsystemBase {
 
         public enum Position {
                 Stow(0),
-                Deploy(40);
+                Deploy(60);
 
                 public double value;
                 
