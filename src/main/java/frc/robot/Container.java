@@ -55,7 +55,7 @@ public class Container {
                 lights = new CANdle(Constants.lightsID);
 
                 mode = Mode.Coral;
-                coralLevel = Elevator.Position.L2_Coral;
+                coralLevel = Elevator.Position.High_Stow;
                 algaeLevel = Elevator.Position.Low_Algae;
         }
 
@@ -137,7 +137,7 @@ public class Container {
         public Command targetLow() {
                 return new Command() {
                         public void initialize() {
-                                coralLevel = Elevator.Position.L2_Coral;
+                                coralLevel = Elevator.Position.High_Stow;
                                 algaeLevel = Elevator.Position.Low_Algae;
                         }
 
@@ -187,14 +187,17 @@ public class Container {
         }
 
         public Command stow() {
-                Command command = Commands.sequence(
-                        Commands.either(
-                                arm.setPosition(Arm.Position.Processor),
-                                arm.setPosition(Arm.Position.Stow),
-                                
-                                () -> arm.hasAlgae()
+                Command command = Commands.either(
+                        Commands.sequence(
+                                arm.setPosition(Arm.Position.Low_Stow),
+                                elevator.setPosition(Elevator.Position.High_Stow)
                         ),
-                        elevator.setPosition(Elevator.Position.Stow)
+                        Commands.sequence(
+                                arm.setPosition(Arm.Position.High_Stow),
+                                elevator.setPosition(Elevator.Position.High_Stow)
+                        ),
+
+                        () -> arm.hasAlgae()
                 )
                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
                 command.addRequirements(arm, elevator);
@@ -204,15 +207,15 @@ public class Container {
 
         public Command runIntake() {
                 Command command = Commands.sequence(
-                        arm.setPosition(Arm.Position.Stow),
+                        arm.setPosition(Arm.Position.High_Stow),
                         Commands.either(
                                 Commands.sequence(
-                                        elevator.setPosition(Elevator.Position.Stow),
+                                        elevator.setPosition(Elevator.Position.Low_Stow),
                                         Commands.parallel(
                                                 arm.setPosition(Arm.Position.Intake_Coral),
                                                 arm.intakeCoral()
                                         ),
-                                        arm.setPosition(Arm.Position.Stow)
+                                        arm.setPosition(Arm.Position.High_Stow)
                                 ),
                                 Commands.parallel(
                                         arm.setPosition(Arm.Position.Intake_Algae),
@@ -234,9 +237,9 @@ public class Container {
                         Commands.either(
                                 arm.outtakeCoral(),
                                 Commands.sequence(
-                                        arm.setPosition(Arm.Position.Stow),
+                                        arm.setPosition(Arm.Position.High_Stow),
                                         elevator.setPosition(coralLevel),
-                                        arm.setPosition(coralLevel == Elevator.Position.L4_Coral ? Arm.Position.L4_Coral : Arm.Position.Stow)
+                                        arm.setPosition(coralLevel == Elevator.Position.L4_Coral ? Arm.Position.L4_Coral : Arm.Position.High_Stow)
                                 ),
                                 
                                 () -> Utilities.inTolerance(coralLevel.value - elevator.getPosition(), 0.4)
@@ -244,7 +247,7 @@ public class Container {
                         Commands.either(
                                 Commands.parallel(
                                         elevator.setPosition(Elevator.Position.End_Barge),
-                                        arm.setPosition(Arm.Position.Stow),
+                                        arm.setPosition(Arm.Position.High_Stow),
                                         Commands.sequence(
                                                 Commands.waitSeconds(0.5),
                                                 arm.outtakeAlgae(-1)
@@ -257,7 +260,7 @@ public class Container {
                                                 arm.setPosition(Arm.Position.Start_Barge)
                                         ),
 
-                                        () -> Utilities.inTolerance(Elevator.Position.Stow.value - elevator.getPosition(), 0.4)
+                                        () -> Utilities.inTolerance(Elevator.Position.Low_Stow.value - elevator.getPosition(), 0.4)
                                 ),
 
                                 () -> Utilities.inTolerance(Elevator.Position.High_Algae.value - elevator.getPosition(), 0.4)
@@ -274,15 +277,15 @@ public class Container {
         public Command runAutoOuttake() {
                 Command command = Commands.either(
                         Commands.sequence(
-                                arm.setPosition(Arm.Position.Stow),
+                                arm.setPosition(Arm.Position.High_Stow),
                                 elevator.setPosition(coralLevel),
-                                arm.setPosition(coralLevel == Elevator.Position.L4_Coral ? Arm.Position.L4_Coral : Arm.Position.Stow),
+                                arm.setPosition(coralLevel == Elevator.Position.L4_Coral ? Arm.Position.L4_Coral : Arm.Position.High_Stow),
                                 Commands.waitSeconds(0.3),
                                 arm.outtakeCoral()
                         ),
                         Commands.sequence(
-                                arm.setPosition(Arm.Position.Processor),
-                                elevator.setPosition(Elevator.Position.Stow),
+                                arm.setPosition(Arm.Position.Low_Stow),
+                                elevator.setPosition(Elevator.Position.High_Stow),
                                 Commands.waitSeconds(0.3),
                                 arm.outtakeAlgae(-0.6)
                         ),

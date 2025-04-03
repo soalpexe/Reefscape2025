@@ -19,9 +19,9 @@ public class Elevator extends SubsystemBase {
         TalonFX left, right;
 
         public enum Position {
-                Stow(0),
+                Low_Stow(0),
+                High_Stow(5),
 
-                L2_Coral(5),
                 L3_Coral(11),
                 L4_Coral(22),
 
