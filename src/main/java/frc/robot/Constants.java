@@ -32,8 +32,8 @@ public class Constants {
                 static int gyroID = 13;
 
                 public static Rotation2d redPerspective = Rotation2d.k180deg, bluePerspective = Rotation2d.kZero;
-                public static PIDController translationPID = new PIDController(Drivetrain.maxSpeed, 0, 0); 
-                public static PIDController headingPID = new PIDController(Drivetrain.maxAngularSpeed, 0, 0); 
+                public static PIDController translationPID = new PIDController(5, 0, 0); 
+                public static PIDController headingPID = new PIDController(5, 0, 0); 
 
                 static TalonFXConfiguration driveConfigs = new TalonFXConfiguration();
                 static TalonFXConfiguration steerConfigs = new TalonFXConfiguration().withCurrentLimits(

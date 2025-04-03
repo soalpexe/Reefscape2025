@@ -15,11 +15,7 @@ public class ButtonBoard {
 
                 Target_Low(3),
                 Target_Medium(4),
-                Target_High(5),
-
-                Align_Left(6),
-                Align_Right(7),
-                Align_Center(8);
+                Target_High(5);
 
                 public int value;
 
