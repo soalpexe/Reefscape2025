@@ -116,7 +116,7 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                 Pose2d robotPose = getRobotPose();
 
                 ChassisSpeeds speeds = new ChassisSpeeds(
-                        Constants.Drivetrain.translationPID.calculate(offsetY, 8),
+                        Constants.Drivetrain.translationPID.calculate(offsetY, 9),
                         Constants.Drivetrain.translationPID.calculate(offsetX, 0),
                         Constants.Drivetrain.translationPID.calculate(Utilities.getRadians(robotPose), Utilities.toHeading(tagID).getRadians())
                 );
