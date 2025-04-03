@@ -146,7 +146,7 @@ public class Constants {
         }
 
         public class Vision {
-                public static String leftID, rightID;
+                public static String leftID = "limelight-left", rightID = "limelight-right";
         }
 
         public class Climber {

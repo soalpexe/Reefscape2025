@@ -46,6 +46,12 @@ public class Robot extends TimedRobot {
                 container.getDrivetrain().updateRobotHeight(container.getElevator().getPosition());
                 container.updateLEDs();
 
+                SmartDashboard.putNumber("Left Offset X", container.getVision().getOffsetX(Camera.Right));
+                SmartDashboard.putNumber("Left Offset Y", container.getVision().getOffsetY(Camera.Right));
+
+                SmartDashboard.putNumber("Right Offset X", container.getVision().getOffsetX(Camera.Left));
+                SmartDashboard.putNumber("Right Offset Y", container.getVision().getOffsetY(Camera.Left));
+
                 SmartDashboard.putData(CommandScheduler.getInstance());
                 SmartDashboard.putData(autoChooser);
                 SmartDashboard.updateValues();

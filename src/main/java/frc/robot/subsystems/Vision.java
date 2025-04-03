@@ -48,7 +48,7 @@ public class Vision extends SubsystemBase {
                 String cameraID = toString(camera);
                 double offset = 0.75 / Math.tan(Math.toRadians(LimelightHelpers.getNTEntry(cameraID, "ty").getDouble(0)));
 
-                return getTagID(camera) != -1 ? offset : 20;
+                return getTagID(camera) != -1 ? offset : 8;
         }
 
         public Pose2d getEstimate(Camera camera) {
