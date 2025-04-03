@@ -194,7 +194,7 @@ public class Container {
                         ),
                         Commands.sequence(
                                 arm.setPosition(Arm.Position.High_Stow),
-                                elevator.setPosition(Elevator.Position.High_Stow)
+                                elevator.setPosition(Elevator.Position.Low_Stow)
                         ),
 
                         () -> arm.hasAlgae()
@@ -280,13 +280,13 @@ public class Container {
                                 arm.setPosition(Arm.Position.High_Stow),
                                 elevator.setPosition(coralLevel),
                                 arm.setPosition(coralLevel == Elevator.Position.L4_Coral ? Arm.Position.L4_Coral : Arm.Position.High_Stow),
-                                Commands.waitSeconds(0.3),
+                                Commands.waitSeconds(0.2),
                                 arm.outtakeCoral()
                         ),
                         Commands.sequence(
                                 arm.setPosition(Arm.Position.Low_Stow),
                                 elevator.setPosition(Elevator.Position.High_Stow),
-                                Commands.waitSeconds(0.3),
+                                Commands.waitSeconds(0.2),
                                 arm.outtakeAlgae(-0.6)
                         ),
 

@@ -23,11 +23,11 @@ public class Elevator extends SubsystemBase {
                 High_Stow(5),
 
                 L3_Coral(11),
-                L4_Coral(22),
+                L4_Coral(21),
 
                 Low_Algae(10),
                 High_Algae(16),
-                End_Barge(22);
+                End_Barge(23);
 
                 public double value;
 
