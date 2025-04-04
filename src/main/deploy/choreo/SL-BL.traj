@@ -1,5 +1,5 @@
 {
- "name":"SL-B",
+ "name":"SL-BL",
  "version":1,
  "snapshot":{
   "waypoints":[
@@ -14,11 +14,10 @@
  "params":{
   "waypoints":[
     {"x":{"exp":"1.14 m", "val":1.14}, "y":{"exp":"7 m", "val":7.0}, "heading":{"exp":"-54 deg", "val":-0.942477796076938}, "intervals":27, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"3.1159417629241943 m", "val":3.1159417629241943}, "y":{"exp":"5.82329797744751 m", "val":5.82329797744751}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":19, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
-    {"x":{"exp":"3.67 m", "val":3.67}, "y":{"exp":"5.49 m", "val":5.49}, "heading":{"exp":"-60 deg", "val":-1.0471975511965976}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
+    {"x":{"exp":"3.95 m", "val":3.95}, "y":{"exp":"5.28 m", "val":5.28}, "heading":{"exp":"-60 deg", "val":-1.0471975511965976}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
   "constraints":[
     {"from":"first", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
-    {"from":1, "to":2, "data":{"type":"MaxVelocity", "props":{"max":{"exp":"2 m / s", "val":2.0}}}, "enabled":true}],
+    {"from":"last", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true}],
   "targetDt":{
    "exp":"0.05 s",
    "val":0.05

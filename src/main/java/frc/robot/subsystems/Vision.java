@@ -11,23 +11,19 @@ import frc.robot.LimelightHelpers;
 import frc.robot.Utilities;
 
 public class Vision extends SubsystemBase {
-        String leftID, rightID;
+        String frontID;
 
         public enum Camera {
-                Left,
-                Right
+                Front
         }
 
-        public Vision(String leftID, String rightID) {
-                this.leftID = leftID;
-                this.rightID = rightID;
+        public Vision(String frontID) {
+                this.frontID = frontID;
         }
 
         String toString(Camera camera) {
                 switch (camera) {
-                        case Left: return leftID;
-                        case Right: return rightID;
-
+                        case Front: return frontID;
                         default: return null;
                 }
         }
@@ -62,8 +58,7 @@ public class Vision extends SubsystemBase {
 
         public Pose2d[] getEstimates() {
                 Pose2d[] estimates = new Pose2d[] {
-                        getEstimate(Camera.Left),
-                        getEstimate(Camera.Right)
+                        getEstimate(Camera.Front),
                 };
 
                 return estimates;

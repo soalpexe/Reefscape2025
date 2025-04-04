@@ -5,6 +5,7 @@
 package frc.robot;
 
 import choreo.auto.AutoChooser;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -23,6 +24,9 @@ public class Robot extends TimedRobot {
 
         Timer timer;
         AutoChooser autoChooser;
+
+        Pose2d robotPose;
+        int side;
 
         public Robot() {
                 scheduler = CommandScheduler.getInstance();
@@ -43,14 +47,15 @@ public class Robot extends TimedRobot {
                 scheduler.run();
 
                 container.updateRobotPose(container.getVision().getEstimates());
+
+                if (!container.getQuest().initialized()) container.getQuest().resetPose(robotPose);
+                container.updateRobotPose(container.getQuest().getPose());
+
+                robotPose = container.getDrivetrain().getRobotPose();
+                side = Utilities.tagToSide(container.getVision().getTagID(Camera.Front));
+                
                 container.getDrivetrain().updateRobotHeight(container.getElevator().getPosition());
                 container.updateLEDs();
-
-                SmartDashboard.putNumber("Left Offset X", container.getVision().getOffsetX(Camera.Right));
-                SmartDashboard.putNumber("Left Offset Y", container.getVision().getOffsetY(Camera.Right));
-
-                SmartDashboard.putNumber("Right Offset X", container.getVision().getOffsetX(Camera.Left));
-                SmartDashboard.putNumber("Right Offset Y", container.getVision().getOffsetY(Camera.Left));
 
                 SmartDashboard.putData(CommandScheduler.getInstance());
                 SmartDashboard.putData(autoChooser);
@@ -71,30 +76,22 @@ public class Robot extends TimedRobot {
         @Override
         public void teleopInit() {
                 scheduler.cancelAll();
-
                 container.climb().schedule();
         }
 
         @Override
         public void teleopPeriodic() {
-                if (controller.getPOV() == 270) container.getDrivetrain().alignTag(
-                        container.getVision().getOffsetX(Camera.Right),
-                        container.getVision().getOffsetY(Camera.Right),
-                        container.getVision().getTagID(Camera.Right)
-                ).schedule();
-
-                if (controller.getPOV() == 90) container.getDrivetrain().alignTag(
-                        container.getVision().getOffsetX(Camera.Left),
-                        container.getVision().getOffsetY(Camera.Left),
-                        container.getVision().getTagID(Camera.Left)
-                ).schedule();
-
                 container.driveJoysticks(
                         controller.getLeftX(),
                         controller.getLeftY(),
                         controller.getRightX(),
                         controller.getLeftTriggerAxis() > 0.1
                 ).schedule();
+
+                if (side != -1) {
+                        if (controller.getPOV() == 90) container.driveToPose(Constants.leftTargets[side]).schedule();
+                        if (controller.getPOV() == 270) container.driveToPose(Constants.rightTargets[side]).schedule();
+                }
 
                 if (controller.getXButtonPressed()) container.getDrivetrain().seedFieldCentric();
 

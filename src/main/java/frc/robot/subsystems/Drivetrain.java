@@ -20,9 +20,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.Constants;
 import frc.robot.Utilities;
 
@@ -112,28 +110,12 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                 setFieldControl(speeds, false);
         }
 
-        public Command alignTag(double offsetX, double offsetY, int tagID) {
-                Pose2d robotPose = getRobotPose();
-
-                ChassisSpeeds speeds = new ChassisSpeeds(
-                        Constants.Drivetrain.translationPID.calculate(offsetY, 9),
-                        Constants.Drivetrain.translationPID.calculate(offsetX, 0),
-                        Constants.Drivetrain.translationPID.calculate(Utilities.getRadians(robotPose), Utilities.toHeading(tagID).getRadians())
-                );
-                Command command = run(() -> setRobotControl(speeds, false))
-                .until(() -> true)
-
-                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-                command.addRequirements(this);
-
-                return command;
+        public Command startTrajectory(String trajectory) {
+                return autoFactory.resetOdometry(trajectory);
         }
 
         public Command followTrajectory(String trajectory) {
-                return Commands.sequence(
-                        autoFactory.resetOdometry(trajectory),
-                        autoFactory.trajectoryCmd(trajectory)
-                );
+                return autoFactory.trajectoryCmd(trajectory);
         }
 
         @Override

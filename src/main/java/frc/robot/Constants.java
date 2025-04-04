@@ -12,7 +12,9 @@ import com.ctre.phoenix6.swerve.*;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.*;
 
 public class Constants {
@@ -23,6 +25,24 @@ public class Constants {
 
         public static double deadband = 0.1;
 
+        public static Pose2d[] leftTargets = new Pose2d[] {
+                new Pose2d(3.13, 4.19, new Rotation2d(0)),
+                new Pose2d(3.95, 5.28, new Rotation2d(-60)),
+                new Pose2d(5.31, 5.12, new Rotation2d(-120)),
+                new Pose2d(5.85, 3.86, new Rotation2d(180)),
+                new Pose2d(5.02, 2.76, new Rotation2d(120)),
+                new Pose2d(3.67, 2.93, new Rotation2d(60))
+        };
+
+        public static Pose2d[] rightTargets = new Pose2d[] {
+                new Pose2d(3.13, 3.86, new Rotation2d(0)),
+                new Pose2d(3.67, 5.12, new Rotation2d(-60)),
+                new Pose2d(5.02, 5.28, new Rotation2d(-120)),
+                new Pose2d(5.85, 4.19, new Rotation2d(180)),
+                new Pose2d(5.31, 2.93, new Rotation2d(120)),
+                new Pose2d(3.95, 2.76, new Rotation2d(60))
+        };
+
         public class Drivetrain {
                 static int frontLeftDriveID = 5, frontLeftSteerID = 6, frontLeftEncoderID = 52;
                 static int frontRightDriveID = 3, frontRightSteerID = 4, frontRightEncoderID = 51;
@@ -31,8 +51,8 @@ public class Constants {
 
                 static int gyroID = 13;
 
-                public static Rotation2d redPerspective = Rotation2d.k180deg, bluePerspective = Rotation2d.kZero;
-                public static PIDController translationPID = new PIDController(1.2, 0, 0.1); 
+                public static Rotation2d redPerspective = Rotation2d.kZero, bluePerspective = Rotation2d.k180deg;
+                public static PIDController translationPID = new PIDController(5, 0, 0); 
                 public static PIDController headingPID = new PIDController(5, 0, 0); 
 
                 static TalonFXConfiguration driveConfigs = new TalonFXConfiguration();
@@ -145,11 +165,16 @@ public class Constants {
                 public static int leftID = 20, rightID = 21;
         }
 
-        public class Vision {
-                public static String leftID = "limelight-left", rightID = "limelight-right";
-        }
-
         public class Climber {
                 public static int winchID = 60;
+        }
+
+        public class Vision {
+                public static String frontID = "limelight-center";
+        }
+
+        public class Quest {
+                public static Translation2d positionOffset = new Translation2d();
+                public static double rotationOffset = 0;
         }
 }
