@@ -71,6 +71,8 @@ public class Robot extends TimedRobot {
         @Override
         public void teleopInit() {
                 scheduler.cancelAll();
+
+                container.climb().schedule();
         }
 
         @Override

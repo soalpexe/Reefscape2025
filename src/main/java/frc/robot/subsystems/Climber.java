@@ -18,8 +18,8 @@ public class Climber extends SubsystemBase {
         TalonFX winch;
 
         public enum Position {
-                Stow(0),
-                Deploy(60);
+                Stow(-60),
+                Deploy(10);
 
                 public double value;
                 
