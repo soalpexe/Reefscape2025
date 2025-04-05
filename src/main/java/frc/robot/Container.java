@@ -51,13 +51,15 @@ public class Container {
 
                 arm = new Arm(Constants.Arm.pivotID, Constants.Arm.rollersID, Constants.Arm.coralRangeID, Constants.Arm.algaeRangeID);
                 elevator = new Elevator(Constants.Elevator.leftID, Constants.Elevator.rightID, Constants.canivoreID);
-                vision = new Vision(Constants.Vision.frontID);
                 climber = new Climber(Constants.Climber.winchID, Constants.canivoreID);
+                
+                vision = new Vision(Constants.Vision.frontID);
+                quest = new QuestNav();
 
                 lights = new CANdle(Constants.lightsID);
 
                 mode = Mode.Coral;
-                coralLevel = Elevator.Position.High_Stow;
+                coralLevel = Elevator.Position.L4_Coral;
                 algaeLevel = Elevator.Position.Low_Algae;
         }
 
@@ -122,7 +124,7 @@ public class Container {
 
         public Command modeCoral() {
                 return new Command() {
-                        public void initialize() {
+                        public void execute() {
                                 mode = Mode.Coral;
                         }
 
@@ -134,7 +136,7 @@ public class Container {
 
         public Command modeAlgae() {
                 return new Command() {
-                        public void initialize() {
+                        public void execute() {
                                 mode = Mode.Algae;
                         }
 
@@ -146,8 +148,8 @@ public class Container {
 
         public Command targetLow() {
                 return new Command() {
-                        public void initialize() {
-                                coralLevel = Elevator.Position.High_Stow;
+                        public void execute() {
+                                coralLevel = Elevator.Position.L2_Coral;
                                 algaeLevel = Elevator.Position.Low_Algae;
                         }
 
@@ -159,7 +161,7 @@ public class Container {
 
         public Command targetMedium() {
                 return new Command() {
-                        public void initialize() {
+                        public void execute() {
                                 coralLevel = Elevator.Position.L3_Coral;
                         }
 
@@ -171,7 +173,7 @@ public class Container {
 
         public Command targetHigh() {
                 return new Command() {
-                        public void initialize() {
+                        public void execute() {
                                 coralLevel = Elevator.Position.L4_Coral;
                                 algaeLevel = Elevator.Position.High_Algae;
                         }
@@ -250,7 +252,8 @@ public class Container {
                                 () -> mode == Mode.Coral
                         )
                 )
-                .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
+                .withInterruptBehavior(InterruptionBehavior.kCancelSelf)
+                .handleInterrupt(() -> arm.reset());
                 command.addRequirements(arm, elevator);
 
                 return command;
@@ -284,7 +287,7 @@ public class Container {
                                                 arm.setPosition(Arm.Position.Start_Barge)
                                         ),
 
-                                        () -> Utilities.inTolerance(Elevator.Position.Low_Stow.value - elevator.getPosition(), 0.4)
+                                        () -> Utilities.inTolerance(Elevator.Position.High_Stow.value - elevator.getPosition(), 0.4)
                                 ),
 
                                 () -> Utilities.inTolerance(Elevator.Position.High_Algae.value - elevator.getPosition(), 0.4)
@@ -292,7 +295,8 @@ public class Container {
 
                         () -> mode == Mode.Coral
                 )
-                .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
+                .withInterruptBehavior(InterruptionBehavior.kCancelSelf)
+                .handleInterrupt(() -> arm.reset());
                 command.addRequirements(arm, elevator);
 
                 return command;

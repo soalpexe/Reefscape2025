@@ -21,6 +21,9 @@ public class AutoRoutines {
                 return Commands.sequence(
                         container.getDrivetrain().startTrajectory("1-CL"),
 
+                        container.targetHigh(),
+                        container.stow(),
+
                         container.getDrivetrain().followTrajectory("1-CL"),
                         container.runAutoOuttake(),
 

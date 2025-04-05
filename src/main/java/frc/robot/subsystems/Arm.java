@@ -30,7 +30,7 @@ public class Arm extends SubsystemBase {
                 L4_Coral(6),
 
                 Intake_Algae(25),
-                Start_Barge(28);
+                Start_Barge(27);
 
                 public double value;
 
@@ -72,11 +72,14 @@ public class Arm extends SubsystemBase {
                 return algaeRange.getIsDetected(true).getValue();
         }
 
+        public void reset() {
+                rollers.set(0);
+        }
+
         public Command setPosition(Position position) {
                 return new Command() {
                         public void execute() {
                                 pivot.setControl(new MotionMagicExpoVoltage(position.value));
-                                rollers.set(0);
                         }
 
                         public boolean isFinished() {
@@ -96,7 +99,7 @@ public class Arm extends SubsystemBase {
                         }
 
                         public void end(boolean interrupted) {
-                                rollers.set(0);
+                                reset();
                         }
                 };
         }
@@ -113,6 +116,10 @@ public class Arm extends SubsystemBase {
 
                         public boolean isFinished() {
                                 return hasAlgae();
+                        }
+
+                        public void end(boolean interrupted) {
+                                reset();
                         }
                 };
         }
@@ -132,7 +139,7 @@ public class Arm extends SubsystemBase {
                         }
 
                         public void end(boolean interrupted) {
-                                rollers.set(0);
+                                reset();
                         }
                 };
         }
@@ -152,7 +159,7 @@ public class Arm extends SubsystemBase {
                         }
 
                         public void end(boolean interrupted) {
-                                rollers.set(0);
+                                reset();
                         }
                 };
         }

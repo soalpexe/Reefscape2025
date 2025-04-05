@@ -4,12 +4,14 @@
 
 package frc.robot;
 
-import choreo.auto.AutoChooser;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.ButtonBoard.Action;
 import frc.robot.subsystems.Vision.Camera;
@@ -19,14 +21,15 @@ public class Robot extends TimedRobot {
 
         XboxController controller;
         ButtonBoard board;
-
         Container container;
 
         Timer timer;
-        AutoChooser autoChooser;
+        StructPublisher<Pose2d> publisher;
 
-        Pose2d robotPose;
-        int side;
+        Command routine;
+
+        Pose2d robotPose = new Pose2d();
+        int side = 0;
 
         public Robot() {
                 scheduler = CommandScheduler.getInstance();
@@ -36,20 +39,19 @@ public class Robot extends TimedRobot {
                 container = new Container();
 
                 timer = new Timer();
-                autoChooser = new AutoChooser();
+                publisher = NetworkTableInstance.getDefault().getStructTopic("Robot Pose", Pose2d.struct).publish();
 
-                autoChooser.addCmd("Leave", () -> AutoRoutines.leave(container));
-                autoChooser.addCmd("Left 3 Coral", () -> AutoRoutines.left3Coral(container));
+                routine = AutoRoutines.left3Coral(container);
         }
 
         @Override
         public void robotPeriodic() {
                 scheduler.run();
 
-                container.updateRobotPose(container.getVision().getEstimates());
+                // container.updateRobotPose(container.getVision().getEstimates());
 
-                if (!container.getQuest().initialized()) container.getQuest().resetPose(robotPose);
-                container.updateRobotPose(container.getQuest().getPose());
+                // if (!container.getQuest().initialized()) container.getQuest().resetPose(robotPose);
+                // container.updateRobotPose(container.getQuest().getPose());
 
                 robotPose = container.getDrivetrain().getRobotPose();
                 side = Utilities.tagToSide(container.getVision().getTagID(Camera.Front));
@@ -58,8 +60,9 @@ public class Robot extends TimedRobot {
                 container.updateLEDs();
 
                 SmartDashboard.putData(CommandScheduler.getInstance());
-                SmartDashboard.putData(autoChooser);
                 SmartDashboard.updateValues();
+
+                publisher.set(robotPose);
 
                 if (timer.hasElapsed(5)) {
                         System.gc();
@@ -70,13 +73,12 @@ public class Robot extends TimedRobot {
         @Override
         public void autonomousInit() {
                 scheduler.cancelAll();
-                autoChooser.selectedCommand().schedule();
+                routine.schedule();
         }
 
         @Override
         public void teleopInit() {
                 scheduler.cancelAll();
-                container.climb().schedule();
         }
 
         @Override
