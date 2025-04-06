@@ -25,23 +25,9 @@ public class Constants {
 
         public static double deadband = 0.1;
 
-        public static Pose2d[] leftTargets = new Pose2d[] {
-                new Pose2d(3.13, 4.19, new Rotation2d(0)),
-                new Pose2d(3.95, 5.28, new Rotation2d(-60)),
-                new Pose2d(5.31, 5.12, new Rotation2d(-120)),
-                new Pose2d(5.85, 3.86, new Rotation2d(180)),
-                new Pose2d(5.02, 2.76, new Rotation2d(120)),
-                new Pose2d(3.67, 2.93, new Rotation2d(60))
-        };
+        public static Pose2d[] leftTargets = new Pose2d[] {};
 
-        public static Pose2d[] rightTargets = new Pose2d[] {
-                new Pose2d(3.13, 3.86, new Rotation2d(0)),
-                new Pose2d(3.67, 5.12, new Rotation2d(-60)),
-                new Pose2d(5.02, 5.28, new Rotation2d(-120)),
-                new Pose2d(5.85, 4.19, new Rotation2d(180)),
-                new Pose2d(5.31, 2.93, new Rotation2d(120)),
-                new Pose2d(3.95, 2.76, new Rotation2d(60))
-        };
+        public static Pose2d[] rightTargets = new Pose2d[] {};
 
         public class Drivetrain {
                 static int frontLeftDriveID = 5, frontLeftSteerID = 6, frontLeftEncoderID = 52;
@@ -51,7 +37,7 @@ public class Constants {
 
                 static int gyroID = 13;
 
-                public static Rotation2d redPerspective = Rotation2d.k180deg, bluePerspective = Rotation2d.kZero;
+                public static Rotation2d redPerspective = Rotation2d.kZero, bluePerspective = Rotation2d.k180deg;
                 public static PIDController translationPID = new PIDController(5, 0, 0); 
                 public static PIDController headingPID = new PIDController(5, 0, 0); 
 

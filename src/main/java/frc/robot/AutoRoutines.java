@@ -17,47 +17,14 @@ public class AutoRoutines {
                 );
         }
 
-        public static Command left3Coral(Container container) {
+        public static Command center1Coral(Container container) {
                 return Commands.sequence(
-                        container.getDrivetrain().startTrajectory("1-CL"),
+                        container.getDrivetrain().driveSpeeds(new ChassisSpeeds(-1, 0, 0)),
+                        Commands.waitSeconds(3),
+                        container.getDrivetrain().driveSpeeds(new ChassisSpeeds()),
 
-                        container.targetHigh(),
-                        container.stow(),
-
-                        container.getDrivetrain().followTrajectory("1-CL"),
-                        container.runAutoOuttake(),
-
-                        Commands.parallel(
-                                container.getDrivetrain().followTrajectory("CL-SL"),
-                                Commands.sequence(
-                                        Commands.waitSeconds(0.2),
-                                        container.stow()
-                                )
-                        ),
-                        container.runIntake(),
-
-                        container.getDrivetrain().followTrajectory("SL-BL"),
-                        container.runAutoOuttake(),
-
-                        Commands.parallel(
-                                container.getDrivetrain().followTrajectory("BL-SL"),
-                                Commands.sequence(
-                                        Commands.waitSeconds(0.2),
-                                        container.stow()
-                                )
-                        ),
-                        container.runIntake(),
-
-                        container.getDrivetrain().followTrajectory("SL-BR"),
-                        container.runAutoOuttake(),
-
-                        Commands.parallel(
-                                container.getDrivetrain().followTrajectory("BR-SL"),
-                                Commands.sequence(
-                                        Commands.waitSeconds(0.2),
-                                        container.stow()
-                                )
-                        )
+                        container.autoOuttake(),
+                        container.stow()
                 );
         }
 }

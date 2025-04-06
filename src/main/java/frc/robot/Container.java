@@ -186,8 +186,8 @@ public class Container {
 
         public Command driveJoysticks(double leftX, double leftY, double rightX, boolean slowed) {
                 ChassisSpeeds speeds = new ChassisSpeeds(
-                        -leftY * Constants.Drivetrain.maxSpeed,
-                        -leftX * Constants.Drivetrain.maxSpeed,
+                        leftY * Constants.Drivetrain.maxSpeed,
+                        leftX * Constants.Drivetrain.maxSpeed,
                         -rightX * Constants.Drivetrain.maxAngularSpeed
                 );
                 Command command = drivetrain.driveSpeeds(speeds, slowed)
@@ -198,22 +198,8 @@ public class Container {
                 return command;
         }
 
-        public Command driveToPose(Pose2d target) {
-                ChassisSpeeds speeds = new ChassisSpeeds(
-                        Constants.Drivetrain.translationPID.calculate(drivetrain.getRobotPose().getY(), target.getY()),
-                        Constants.Drivetrain.translationPID.calculate(drivetrain.getRobotPose().getX(), target.getX()),
-                        Constants.Drivetrain.translationPID.calculate(Utilities.getRadians(drivetrain.getRobotPose()), Utilities.getRadians(target))
-                );
-                Command command = drivetrain.driveSpeeds(speeds)
-                
-                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-                command.addRequirements(drivetrain);
-
-                return command;
-        }
-
         public Command stow() {
-                Command command = Commands.either(
+                return Commands.either(
                         Commands.sequence(
                                 arm.setPosition(Arm.Position.Low_Stow),
                                 elevator.setPosition(Elevator.Position.High_Stow)
@@ -224,43 +210,34 @@ public class Container {
                         ),
 
                         () -> arm.hasAlgae()
-                )
-                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-                command.addRequirements(arm, elevator);
-
-                return command;
+                );
         }
 
-        public Command runIntake() {
-                Command command = Commands.sequence(
+        public Command intakeCoral() {
+                return Commands.sequence(
                         arm.setPosition(Arm.Position.High_Stow),
-                        Commands.either(
-                                Commands.sequence(
-                                        elevator.setPosition(Elevator.Position.Low_Stow),
-                                        Commands.parallel(
-                                                arm.setPosition(Arm.Position.Intake_Coral),
-                                                arm.intakeCoral()
-                                        ),
-                                        arm.setPosition(Arm.Position.High_Stow)
-                                ),
-                                Commands.parallel(
-                                        arm.setPosition(Arm.Position.Intake_Algae),
-                                        elevator.setPosition(algaeLevel),
-                                        arm.intakeAlgae()
-                                ),
-
-                                () -> mode == Mode.Coral
-                        )
-                )
-                .withInterruptBehavior(InterruptionBehavior.kCancelSelf)
-                .handleInterrupt(() -> arm.reset());
-                command.addRequirements(arm, elevator);
-
-                return command;
+                        elevator.setPosition(Elevator.Position.Low_Stow),
+                        Commands.parallel(
+                                arm.setPosition(Arm.Position.Intake_Coral),
+                                arm.intakeCoral()
+                        ),
+                        arm.setPosition(Arm.Position.High_Stow)
+                );
         }
 
-        public Command runTeleOuttake() {
-                Command command = Commands.either(
+        public Command intakeAlgae() {
+                return Commands.sequence(
+                        arm.setPosition(Arm.Position.High_Stow),
+                        Commands.parallel(
+                                arm.setPosition(Arm.Position.Intake_Algae),
+                                elevator.setPosition(algaeLevel),
+                                arm.intakeAlgae()
+                        )
+                );
+        }
+
+        public Command teleOuttake() {
+                return Commands.either(
                         Commands.either(
                                 arm.outtakeCoral(),
                                 Commands.sequence(
@@ -294,16 +271,11 @@ public class Container {
                         ),
 
                         () -> mode == Mode.Coral
-                )
-                .withInterruptBehavior(InterruptionBehavior.kCancelSelf)
-                .handleInterrupt(() -> arm.reset());
-                command.addRequirements(arm, elevator);
-
-                return command;
+                );
         }
 
-        public Command runAutoOuttake() {
-                Command command = Commands.either(
+        public Command autoOuttake() {
+                return Commands.either(
                         Commands.sequence(
                                 arm.setPosition(Arm.Position.High_Stow),
                                 elevator.setPosition(coralLevel),
@@ -319,11 +291,7 @@ public class Container {
                         ),
 
                         () -> mode == Mode.Coral
-                )
-                .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
-                command.addRequirements(arm, elevator);
-
-                return command;
+                );
         }
 
         public Command climb() {

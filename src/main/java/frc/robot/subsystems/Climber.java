@@ -5,7 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -18,8 +18,8 @@ public class Climber extends SubsystemBase {
         TalonFX winch;
 
         public enum Position {
-                Stow(-60),
-                Deploy(10);
+                Stow(0),
+                Deploy(260);
 
                 public double value;
                 
@@ -35,10 +35,8 @@ public class Climber extends SubsystemBase {
                 config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
                 config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-                config.Slot0.kP = 10;
+                config.Slot0.kP = 15;
 
-                config.MotionMagic.MotionMagicCruiseVelocity = 20;
-                config.MotionMagic.MotionMagicAcceleration = 30;
                 winch.getConfigurator().apply(config);
         }
 
@@ -49,7 +47,7 @@ public class Climber extends SubsystemBase {
         public Command setPosition(Position position) {
                 return new Command() {
                         public void execute() {
-                                winch.setControl(new MotionMagicExpoVoltage(position.value));
+                                winch.setControl(new PositionVoltage(position.value));
                         }
 
                         public boolean isFinished() {

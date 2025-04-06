@@ -10,69 +10,69 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.ButtonBoard.Action;
-import frc.robot.subsystems.Vision.Camera;
 
 public class Robot extends TimedRobot {
         CommandScheduler scheduler;
+        Timer timer;
 
         XboxController controller;
         ButtonBoard board;
         Container container;
-
-        Timer timer;
+        
+        Pose2d robotPose = new Pose2d();
         StructPublisher<Pose2d> publisher;
 
         Command routine;
+        Button[] binds = new Button[] {
+                Button.kLeftBumper,
+                Button.kRightBumper,
 
-        Pose2d robotPose = new Pose2d();
-        int side = 0;
+                Button.kA,
+                Button.kY
+        }; 
 
         public Robot() {
                 scheduler = CommandScheduler.getInstance();
+                timer = new Timer();
 
                 controller = new XboxController(Constants.controllerID);
                 board = new ButtonBoard(Constants.boardID);
                 container = new Container();
 
-                timer = new Timer();
                 publisher = NetworkTableInstance.getDefault().getStructTopic("Robot Pose", Pose2d.struct).publish();
 
-                routine = AutoRoutines.left3Coral(container);
+                routine = AutoRoutines.center1Coral(container);
         }
 
         @Override
         public void robotPeriodic() {
                 scheduler.run();
 
-                // container.updateRobotPose(container.getVision().getEstimates());
-
-                // if (!container.getQuest().initialized()) container.getQuest().resetPose(robotPose);
-                // container.updateRobotPose(container.getQuest().getPose());
-
-                robotPose = container.getDrivetrain().getRobotPose();
-                side = Utilities.tagToSide(container.getVision().getTagID(Camera.Front));
-                
-                container.getDrivetrain().updateRobotHeight(container.getElevator().getPosition());
-                container.updateLEDs();
-
                 SmartDashboard.putData(CommandScheduler.getInstance());
                 SmartDashboard.updateValues();
-
-                publisher.set(robotPose);
 
                 if (timer.hasElapsed(5)) {
                         System.gc();
                         timer.reset();
                 }
+
+                container.getDrivetrain().updateRobotHeight(container.getElevator().getPosition());
+                container.updateLEDs();
+
+                robotPose = container.getDrivetrain().getRobotPose();
+                publisher.set(robotPose);
         }
 
         @Override
         public void autonomousInit() {
                 scheduler.cancelAll();
+
+                container.getDrivetrain().seedFieldCentric();
                 routine.schedule();
         }
 
@@ -83,31 +83,32 @@ public class Robot extends TimedRobot {
 
         @Override
         public void teleopPeriodic() {
+                if (board.getButtonPressed(Action.Reset)) scheduler.cancelAll();
+
                 container.driveJoysticks(
                         controller.getLeftX(),
                         controller.getLeftY(),
                         controller.getRightX(),
                         controller.getLeftTriggerAxis() > 0.1
                 ).schedule();
-
-                if (side != -1) {
-                        if (controller.getPOV() == 90) container.driveToPose(Constants.leftTargets[side]).schedule();
-                        if (controller.getPOV() == 270) container.driveToPose(Constants.rightTargets[side]).schedule();
+                
+                if (controller.getLeftBumperButtonPressed()) {
+                        if (container.getMode() == Container.Mode.Coral) container.intakeCoral().schedule();
+                        if (container.getMode() == Container.Mode.Algae) container.intakeAlgae().schedule();
                 }
+                if (controller.getRightBumperButtonPressed()) container.teleOuttake().schedule();
+
+                if (controller.getAButtonPressed()) container.stow().schedule();
+                if (controller.getYButtonPressed()) container.climb().schedule();
 
                 if (controller.getXButtonPressed()) container.getDrivetrain().seedFieldCentric();
 
                 if (board.getButtonPressed(Action.Mode_Coral)) container.modeCoral().schedule();
                 if (board.getButtonPressed(Action.Mode_Algae)) container.modeAlgae().schedule();
-
-                if (controller.getAButtonPressed()) container.stow().schedule();
-                if (controller.getYButtonPressed()) container.climb().schedule();
                 
                 if (board.getButtonPressed(Action.Target_Low)) container.targetLow().schedule();
                 if (board.getButtonPressed(Action.Target_Medium)) container.targetMedium().schedule();
                 if (board.getButtonPressed(Action.Target_High)) container.targetHigh().schedule();
 
-                if (controller.getLeftBumperButtonPressed()) container.runIntake().schedule();
-                if (controller.getRightBumperButtonPressed()) container.runTeleOuttake().schedule();
         }
 }

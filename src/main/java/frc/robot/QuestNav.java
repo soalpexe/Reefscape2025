@@ -39,15 +39,6 @@ public class QuestNav {
                 return Utilities.isValidPose(resetPose);
         }
 
-        public void heartbeat() {
-                double requestId = request.get();
-
-                if (requestId > 0 && requestId != lastProcessed) {
-                        response.set(requestId);
-                        lastProcessed = requestId;
-                }
-        }
-
         public double getTime() {
                 return timestamp.getAtomic().serverTime;
         }
@@ -58,6 +49,15 @@ public class QuestNav {
 
         public int getFrames() {
                 return (int)frames.get();
+        }
+
+        public void heartbeat() {
+                double requestId = request.get();
+
+                if (requestId > 0 && requestId != lastProcessed) {
+                        response.set(requestId);
+                        lastProcessed = requestId;
+                }
         }
 
         Translation2d getTranslation() {
@@ -83,8 +83,6 @@ public class QuestNav {
         public void resetPose(Pose2d pose) {
                 resetPose = pose;
 
-                if (miso.get() != 99) {
-                        mosi.set(1);
-                }
+                if (miso.get() != 99) mosi.set(1);
         }
 }

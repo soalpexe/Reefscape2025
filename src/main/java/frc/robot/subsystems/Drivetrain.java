@@ -118,7 +118,6 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
         public Command followTrajectory(String trajectory) {
                 return Commands.sequence(
                         autoFactory.trajectoryCmd(trajectory),
-                        Commands.waitSeconds(0.2),
                         driveSpeeds(new ChassisSpeeds())
                 );
         }

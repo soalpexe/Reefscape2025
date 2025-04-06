@@ -6,7 +6,9 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.XboxController.Button;
 
 public class Utilities {
         public static Alliance getAlliance() {
@@ -25,14 +27,12 @@ public class Utilities {
                 return !pose.equals(new Pose2d()) && pose != null;
         }
 
-        public static int tagToSide(int tagID) {
-                if (tagID == 7 || tagID == 18) return 0;
-                if (tagID == 6 || tagID == 19) return 0;
-                if (tagID == 11 || tagID == 20) return 0;
-                if (tagID == 10 || tagID == 21) return 0;
-                if (tagID == 9 || tagID == 22) return 0;
-                if (tagID == 8 || tagID == 17) return 0;
+        public static boolean bindPressed(XboxController controller, Button[] buttons) {
+                for (Button button : buttons) {
+                        boolean pressed = controller.getRawButtonPressed(button.value);
+                        if (pressed) return true;
+                }
 
-                return -1;
+                return false;
         }
 }
