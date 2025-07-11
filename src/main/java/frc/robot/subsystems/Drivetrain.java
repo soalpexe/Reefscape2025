@@ -105,7 +105,7 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                 ChassisSpeeds speeds = new ChassisSpeeds(
                         sample.vx + Constants.Drivetrain.translationPID.calculate(robotPose.getX(), sample.x),
                         sample.vy + Constants.Drivetrain.translationPID.calculate(robotPose.getY(), sample.y),
-                        sample.omega + Constants.Drivetrain.translationPID.calculate(Utilities.getRadians(robotPose), sample.heading)
+                        sample.omega + Constants.Drivetrain.headingPID.calculate(Utilities.getRadians(robotPose), sample.heading)
                 );
 
                 setFieldControl(speeds, false);

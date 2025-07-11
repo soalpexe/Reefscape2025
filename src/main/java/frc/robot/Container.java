@@ -11,8 +11,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Vision;
@@ -27,8 +27,6 @@ public class Container {
         Climber climber;
 
         Vision vision;
-        QuestNav quest;
-
         CANdle lights;
 
         Mode mode;
@@ -49,54 +47,16 @@ public class Container {
                         Constants.Drivetrain.backRightConfigs
                 );
 
-                arm = new Arm(Constants.Arm.pivotID, Constants.Arm.rollersID, Constants.Arm.coralRangeID, Constants.Arm.algaeRangeID);
-                elevator = new Elevator(Constants.Elevator.leftID, Constants.Elevator.rightID, Constants.canivoreID);
-                climber = new Climber(Constants.Climber.winchID, Constants.canivoreID);
+                arm = new Arm(Constants.Arm.pivotID, Constants.Arm.rollersID, Constants.Arm.coralRangeID, Constants.Arm.algaeRangeID, Constants.canivoreID);
+                elevator = new Elevator(Constants.Elevator.leftID, Constants.Elevator.rightID);
+                climber = new Climber(Constants.Climber.winchID);
                 
                 vision = new Vision(Constants.Vision.frontID);
-                quest = new QuestNav();
-
                 lights = new CANdle(Constants.lightsID);
 
                 mode = Mode.Coral;
-                coralLevel = Elevator.Position.L4_Coral;
+                coralLevel = Elevator.Position.L2_Coral;
                 algaeLevel = Elevator.Position.Low_Algae;
-        }
-
-        public Drivetrain getDrivetrain() {
-                return drivetrain;
-        }
-
-        public Arm getArm() {
-                return arm;
-        }
-
-        public Elevator getElevator() {
-                return elevator;
-        }
-
-        public Climber getClimber() {
-                return climber;
-        }
-
-        public Vision getVision() {
-                return vision;
-        }
-
-        public QuestNav getQuest() {
-                return quest;
-        }
-
-        public Mode getMode() {
-                return mode;
-        }
-
-        public Elevator.Position getCoralLevel() {
-                return coralLevel;
-        }
-
-        public Elevator.Position getAlgaeLevel() {
-                return algaeLevel;
         }
 
         public void updateRobotPose(Pose2d estimate) {
@@ -122,80 +82,33 @@ public class Container {
                 else lights.setLEDs(0, 255, 0);
         }
 
-        public Command modeCoral() {
-                return new Command() {
-                        public void execute() {
-                                mode = Mode.Coral;
-                        }
-
-                        public boolean isFinished() {
-                                return true;
-                        }
-                };
+        public void targetLow() {
+                coralLevel = Elevator.Position.L2_Coral;
+                algaeLevel = Elevator.Position.Low_Algae;
         }
 
-        public Command modeAlgae() {
-                return new Command() {
-                        public void execute() {
-                                mode = Mode.Algae;
-                        }
-
-                        public boolean isFinished() {
-                                return true;
-                        }
-                };
+        public void targetMedium() {
+                coralLevel = Elevator.Position.L3_Coral;
         }
 
-        public Command targetLow() {
-                return new Command() {
-                        public void execute() {
-                                coralLevel = Elevator.Position.L2_Coral;
-                                algaeLevel = Elevator.Position.Low_Algae;
-                        }
-
-                        public boolean isFinished() {
-                                return true;
-                        }
-                };
+        public void targetHigh() {
+                coralLevel = Elevator.Position.L4_Coral;
+                algaeLevel = Elevator.Position.High_Algae;
         }
 
-        public Command targetMedium() {
-                return new Command() {
-                        public void execute() {
-                                coralLevel = Elevator.Position.L3_Coral;
-                        }
-
-                        public boolean isFinished() {
-                                return true;
-                        }
-                };
+        public void scheduleOnly(Command command) {
+                CommandScheduler.getInstance().cancelAll();
+                command.schedule();
         }
-
-        public Command targetHigh() {
-                return new Command() {
-                        public void execute() {
-                                coralLevel = Elevator.Position.L4_Coral;
-                                algaeLevel = Elevator.Position.High_Algae;
-                        }
-
-                        public boolean isFinished() {
-                                return true;
-                        }
-                };
-        }
-
+        
         public Command driveJoysticks(double leftX, double leftY, double rightX, boolean slowed) {
                 ChassisSpeeds speeds = new ChassisSpeeds(
                         leftY * Constants.Drivetrain.maxSpeed,
                         leftX * Constants.Drivetrain.maxSpeed,
                         -rightX * Constants.Drivetrain.maxAngularSpeed
                 );
-                Command command = drivetrain.driveSpeeds(speeds, slowed)
                 
-                .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
-                command.addRequirements(drivetrain);
-
-                return command;
+                return drivetrain.driveSpeeds(speeds, slowed);
         }
 
         public Command stow() {
@@ -213,26 +126,27 @@ public class Container {
                 );
         }
 
-        public Command intakeCoral() {
-                return Commands.sequence(
-                        arm.setPosition(Arm.Position.High_Stow),
-                        elevator.setPosition(Elevator.Position.Low_Stow),
-                        Commands.parallel(
-                                arm.setPosition(Arm.Position.Intake_Coral),
-                                arm.intakeCoral()
+        public Command intake() {
+                return Commands.either(
+                        Commands.sequence(
+                                arm.setPosition(Arm.Position.High_Stow),
+                                elevator.setPosition(Elevator.Position.Low_Stow),
+                                Commands.parallel(
+                                        arm.setPosition(Arm.Position.Intake_Coral),
+                                        arm.intakeCoral()
+                                ),
+                                arm.setPosition(Arm.Position.High_Stow)
                         ),
-                        arm.setPosition(Arm.Position.High_Stow)
-                );
-        }
+                        Commands.sequence(
+                                arm.setPosition(Arm.Position.High_Stow),
+                                Commands.parallel(
+                                        arm.setPosition(Arm.Position.Intake_Algae),
+                                        elevator.setPosition(algaeLevel),
+                                        arm.intakeAlgae()
+                                )
+                        ),
 
-        public Command intakeAlgae() {
-                return Commands.sequence(
-                        arm.setPosition(Arm.Position.High_Stow),
-                        Commands.parallel(
-                                arm.setPosition(Arm.Position.Intake_Algae),
-                                elevator.setPosition(algaeLevel),
-                                arm.intakeAlgae()
-                        )
+                        () -> mode == Mode.Coral
                 );
         }
 

@@ -39,12 +39,12 @@ public class Arm extends SubsystemBase {
                 }
         }
 
-        public Arm(int pivotID, int rollersID, int coralRangeID, int algaeRangeID) {
-                pivot = new TalonFX(pivotID);
-                rollers = new TalonFX(rollersID);
+        public Arm(int pivotID, int rollersID, int coralRangeID, int algaeRangeID, String canID) {
+                pivot = new TalonFX(pivotID, canID);
+                rollers = new TalonFX(rollersID, canID);
 
-                coralRange = new CANrange(coralRangeID);
-                algaeRange = new CANrange(algaeRangeID);
+                coralRange = new CANrange(coralRangeID, canID);
+                algaeRange = new CANrange(algaeRangeID, canID);
 
                 TalonFXConfiguration config = new TalonFXConfiguration();
                 config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
@@ -72,10 +72,6 @@ public class Arm extends SubsystemBase {
                 return algaeRange.getIsDetected(true).getValue();
         }
 
-        public void reset() {
-                rollers.set(0);
-        }
-
         public Command setPosition(Position position) {
                 return new Command() {
                         public void execute() {
@@ -99,7 +95,7 @@ public class Arm extends SubsystemBase {
                         }
 
                         public void end(boolean interrupted) {
-                                reset();
+                                rollers.set(0);
                         }
                 };
         }
@@ -119,7 +115,7 @@ public class Arm extends SubsystemBase {
                         }
 
                         public void end(boolean interrupted) {
-                                reset();
+                                rollers.set(0);
                         }
                 };
         }
@@ -139,7 +135,7 @@ public class Arm extends SubsystemBase {
                         }
 
                         public void end(boolean interrupted) {
-                                reset();
+                                rollers.set(0);
                         }
                 };
         }
@@ -159,7 +155,7 @@ public class Arm extends SubsystemBase {
                         }
 
                         public void end(boolean interrupted) {
-                                reset();
+                                rollers.set(0);
                         }
                 };
         }

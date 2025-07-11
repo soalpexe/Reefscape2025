@@ -12,9 +12,7 @@ import com.ctre.phoenix6.swerve.*;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.*;
 
 public class Constants {
@@ -24,10 +22,6 @@ public class Constants {
         public static String canivoreID = "*";
 
         public static double deadband = 0.1;
-
-        public static Pose2d[] leftTargets = new Pose2d[] {};
-
-        public static Pose2d[] rightTargets = new Pose2d[] {};
 
         public class Drivetrain {
                 static int frontLeftDriveID = 5, frontLeftSteerID = 6, frontLeftEncoderID = 52;
@@ -117,7 +111,6 @@ public class Constants {
                 static Distance backRightX = Inches.of(-12.625), backRightY = Inches.of(-11.3125);
 
                 public static SwerveDrivetrainConstants drivetrainConfigs = new SwerveDrivetrainConstants()
-                        .withCANBusName(canivoreID)
                         .withPigeon2Id(gyroID)
                         .withPigeon2Configs(pigeonConfigs);
 
@@ -157,10 +150,5 @@ public class Constants {
 
         public class Vision {
                 public static String frontID = "limelight-center";
-        }
-
-        public class Quest {
-                public static Translation2d positionOffset = new Translation2d();
-                public static double rotationOffset = 0;
         }
 }

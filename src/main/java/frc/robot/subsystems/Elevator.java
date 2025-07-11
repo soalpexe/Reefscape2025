@@ -37,9 +37,9 @@ public class Elevator extends SubsystemBase {
                 }
         }
 
-        public Elevator(int leftID, int rightID, String canID) {
-                left = new TalonFX(leftID, canID);
-                right = new TalonFX(rightID, canID);
+        public Elevator(int leftID, int rightID) {
+                left = new TalonFX(leftID);
+                right = new TalonFX(rightID);
 
                 TalonFXConfiguration config = new TalonFXConfiguration();
                 config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;

@@ -28,8 +28,8 @@ public class Climber extends SubsystemBase {
                 }
         }
 
-        public Climber(int winchID, String canID) {
-                winch = new TalonFX(winchID, canID);
+        public Climber(int winchID) {
+                winch = new TalonFX(winchID);
 
                 TalonFXConfiguration config = new TalonFXConfiguration();
                 config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;

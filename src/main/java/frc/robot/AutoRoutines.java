@@ -11,17 +11,17 @@ import edu.wpi.first.wpilibj2.command.Commands;
 public class AutoRoutines {
         public static Command leave(Container container) {
                 return Commands.sequence(
-                        container.getDrivetrain().driveSpeeds(new ChassisSpeeds(-1, 0, 0)),
+                        container.drivetrain.driveSpeeds(new ChassisSpeeds(1, 0, 0)),
                         Commands.waitSeconds(3),
-                        container.getDrivetrain().driveSpeeds(new ChassisSpeeds())
+                        container.drivetrain.driveSpeeds(new ChassisSpeeds())
                 );
         }
 
         public static Command center1Coral(Container container) {
                 return Commands.sequence(
-                        container.getDrivetrain().driveSpeeds(new ChassisSpeeds(-1, 0, 0)),
+                        container.drivetrain.driveSpeeds(new ChassisSpeeds(1, 0, 0)),
                         Commands.waitSeconds(3),
-                        container.getDrivetrain().driveSpeeds(new ChassisSpeeds()),
+                        container.drivetrain.driveSpeeds(new ChassisSpeeds()),
 
                         container.autoOuttake(),
                         container.stow()

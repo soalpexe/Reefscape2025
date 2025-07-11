@@ -56,15 +56,10 @@ public class Robot extends TimedRobot {
                 SmartDashboard.putData(CommandScheduler.getInstance());
                 SmartDashboard.updateValues();
 
-                if (timer.hasElapsed(5)) {
-                        System.gc();
-                        timer.reset();
-                }
-
-                container.getDrivetrain().updateRobotHeight(container.getElevator().getPosition());
+                container.drivetrain.updateRobotHeight(container.elevator.getPosition());
                 container.updateLEDs();
 
-                robotPose = container.getDrivetrain().getRobotPose();
+                robotPose = container.drivetrain.getRobotPose();
                 publisher.set(robotPose);
         }
 
@@ -72,7 +67,7 @@ public class Robot extends TimedRobot {
         public void autonomousInit() {
                 scheduler.cancelAll();
 
-                container.getDrivetrain().seedFieldCentric();
+                container.drivetrain.seedFieldCentric();
                 routine.schedule();
         }
 
@@ -92,23 +87,19 @@ public class Robot extends TimedRobot {
                         controller.getLeftTriggerAxis() > 0.1
                 ).schedule();
                 
-                if (controller.getLeftBumperButtonPressed()) {
-                        if (container.getMode() == Container.Mode.Coral) container.intakeCoral().schedule();
-                        if (container.getMode() == Container.Mode.Algae) container.intakeAlgae().schedule();
-                }
-                if (controller.getRightBumperButtonPressed()) container.teleOuttake().schedule();
+                if (controller.getLeftBumperButtonPressed()) container.scheduleOnly(container.intake());
+                if (controller.getRightBumperButtonPressed()) container.scheduleOnly(container.teleOuttake());
 
-                if (controller.getAButtonPressed()) container.stow().schedule();
+                if (controller.getAButtonPressed()) container.scheduleOnly(container.stow());
                 if (controller.getYButtonPressed()) container.climb().schedule();
 
-                if (controller.getXButtonPressed()) container.getDrivetrain().seedFieldCentric();
+                if (controller.getXButtonPressed()) container.drivetrain.seedFieldCentric();
 
-                if (board.getButtonPressed(Action.Mode_Coral)) container.modeCoral().schedule();
-                if (board.getButtonPressed(Action.Mode_Algae)) container.modeAlgae().schedule();
+                if (board.getButtonPressed(Action.Mode_Coral)) container.mode = Container.Mode.Coral;
+                if (board.getButtonPressed(Action.Mode_Algae)) container.mode = Container.Mode.Algae;
                 
-                if (board.getButtonPressed(Action.Target_Low)) container.targetLow().schedule();
-                if (board.getButtonPressed(Action.Target_Medium)) container.targetMedium().schedule();
-                if (board.getButtonPressed(Action.Target_High)) container.targetHigh().schedule();
-
+                if (board.getButtonPressed(Action.Target_Low)) container.targetLow();
+                if (board.getButtonPressed(Action.Target_Medium)) container.targetMedium();
+                if (board.getButtonPressed(Action.Target_High)) container.targetHigh();
         }
 }
