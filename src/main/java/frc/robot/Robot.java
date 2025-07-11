@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
@@ -46,7 +49,11 @@ public class Robot extends TimedRobot {
 
                 publisher = NetworkTableInstance.getDefault().getStructTopic("Robot Pose", Pose2d.struct).publish();
 
-                routine = AutoRoutines.center1Coral(container);
+                NamedCommands.registerCommand("Intake", container.intake());
+                NamedCommands.registerCommand("Outtake", container.autoOuttake());
+                NamedCommands.registerCommand("Stow", container.stow());
+
+                routine = AutoBuilder.buildAuto("2-1Coral");
         }
 
         @Override

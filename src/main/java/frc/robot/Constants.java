@@ -10,8 +10,8 @@ import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.*;
 import com.ctre.phoenix6.swerve.*;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
+import com.pathplanner.lib.config.PIDConstants;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.*;
 
@@ -21,19 +21,20 @@ public class Constants {
 
         public static String canivoreID = "*";
 
-        public static double deadband = 0.1;
+        public static double deadband = 0.15;
 
         public class Drivetrain {
+                static int gyroID = 13;
+
                 static int frontLeftDriveID = 5, frontLeftSteerID = 6, frontLeftEncoderID = 52;
                 static int frontRightDriveID = 3, frontRightSteerID = 4, frontRightEncoderID = 51;
                 static int backLeftDriveID = 7, backLeftSteerID = 8, backLeftEncoderID = 54;
                 static int backRightDriveID = 1, backRightSteerID = 2, backRightEncoderID = 53;
 
-                static int gyroID = 13;
-
                 public static Rotation2d redPerspective = Rotation2d.kZero, bluePerspective = Rotation2d.k180deg;
-                public static PIDController translationPID = new PIDController(5, 0, 0); 
-                public static PIDController headingPID = new PIDController(5, 0, 0); 
+                
+                public static PIDConstants translationPID = new PIDConstants(5, 0, 0); 
+                public static PIDConstants headingPID = new PIDConstants(5, 0, 0); 
 
                 static TalonFXConfiguration driveConfigs = new TalonFXConfiguration();
                 static TalonFXConfiguration steerConfigs = new TalonFXConfiguration().withCurrentLimits(

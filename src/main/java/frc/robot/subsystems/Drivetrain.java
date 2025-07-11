@@ -9,18 +9,17 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 
-import choreo.auto.AutoFactory;
-import choreo.trajectory.SwerveSample;
-
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
 import frc.robot.Utilities;
@@ -28,8 +27,8 @@ import frc.robot.Utilities;
 public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> implements Subsystem {
         SwerveRequest.FieldCentric fieldCentric;
         SwerveRequest.RobotCentric robotCentric;
-        
-        AutoFactory autoFactory;
+
+        RobotConfig config;
 
         boolean appliedPerspective = false;
         double antiTipping = 1;
@@ -45,12 +44,24 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                         .withDeadband(Constants.Drivetrain.maxSpeed * Constants.deadband)
                         .withRotationalDeadband(Constants.Drivetrain.maxAngularSpeed * Constants.deadband);
 
-                autoFactory = new AutoFactory(
+                try {
+                        config = RobotConfig.fromGUISettings();
+                }
+                catch (Exception err) {
+                        err.printStackTrace();
+                }
+
+                AutoBuilder.configure(
                         this::getRobotPose,
                         this::resetPose,
-                        this::driveSample,
-                        true,
-                        this
+                        () -> getState().Speeds,
+                        (speeds, feedforwards) -> setRobotControl(speeds),
+                        new PPHolonomicDriveController(
+                                Constants.Drivetrain.translationPID,
+                                Constants.Drivetrain.headingPID
+                        ),
+                        config,
+                        () -> Utilities.getAlliance() == Alliance.Red
                 );
         }
 
@@ -79,14 +90,11 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                 );
         }
 
-        public void setRobotControl(ChassisSpeeds speeds, boolean slowed) {
-                double translationSlow = slowed ? 0.15 : antiTipping;
-                double headingSlow = slowed ? 0.5 : antiTipping;
-
+        public void setRobotControl(ChassisSpeeds speeds) {
                 setControl(robotCentric
-                        .withVelocityX(speeds.vxMetersPerSecond * translationSlow)
-                        .withVelocityY(speeds.vyMetersPerSecond * translationSlow)
-                        .withRotationalRate(speeds.omegaRadiansPerSecond * headingSlow)
+                        .withVelocityX(speeds.vxMetersPerSecond)
+                        .withVelocityY(speeds.vyMetersPerSecond)
+                        .withRotationalRate(speeds.omegaRadiansPerSecond)
                 );
         }
 
@@ -97,29 +105,6 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
 
         public Command driveSpeeds(ChassisSpeeds speeds) {
                 return driveSpeeds(speeds, false);
-        }
-
-        public void driveSample(SwerveSample sample) {
-                Pose2d robotPose = getRobotPose();
-
-                ChassisSpeeds speeds = new ChassisSpeeds(
-                        sample.vx + Constants.Drivetrain.translationPID.calculate(robotPose.getX(), sample.x),
-                        sample.vy + Constants.Drivetrain.translationPID.calculate(robotPose.getY(), sample.y),
-                        sample.omega + Constants.Drivetrain.headingPID.calculate(Utilities.getRadians(robotPose), sample.heading)
-                );
-
-                setFieldControl(speeds, false);
-        }
-
-        public Command startTrajectory(String trajectory) {
-                return autoFactory.resetOdometry(trajectory);
-        }
-
-        public Command followTrajectory(String trajectory) {
-                return Commands.sequence(
-                        autoFactory.trajectoryCmd(trajectory),
-                        driveSpeeds(new ChassisSpeeds())
-                );
         }
 
         @Override

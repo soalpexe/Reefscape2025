@@ -55,7 +55,7 @@ public class Container {
                 lights = new CANdle(Constants.lightsID);
 
                 mode = Mode.Coral;
-                coralLevel = Elevator.Position.L2_Coral;
+                coralLevel = Elevator.Position.L4_Coral;
                 algaeLevel = Elevator.Position.Low_Algae;
         }
 
