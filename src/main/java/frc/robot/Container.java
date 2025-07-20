@@ -30,6 +30,7 @@ public class Container {
         CANdle lights;
 
         Mode mode;
+        Arm.Position coralAngle;
         Elevator.Position coralLevel, algaeLevel;
 
         public enum Mode {
@@ -55,6 +56,8 @@ public class Container {
                 lights = new CANdle(Constants.lightsID);
 
                 mode = Mode.Coral;
+
+                coralAngle = Arm.Position.L4_Coral;
                 coralLevel = Elevator.Position.L4_Coral;
                 algaeLevel = Elevator.Position.Low_Algae;
         }
@@ -83,17 +86,27 @@ public class Container {
         }
 
         public void targetLow() {
+                coralAngle = Arm.Position.High_Stow;
                 coralLevel = Elevator.Position.L2_Coral;
+
                 algaeLevel = Elevator.Position.Low_Algae;
         }
 
         public void targetMedium() {
+                coralAngle = Arm.Position.High_Stow;
                 coralLevel = Elevator.Position.L3_Coral;
         }
 
         public void targetHigh() {
+                coralAngle = Arm.Position.L4_Coral;
                 coralLevel = Elevator.Position.L4_Coral;
+                
                 algaeLevel = Elevator.Position.High_Algae;
+        }
+
+        public void targetTrough() {
+                coralAngle = Arm.Position.L1_Coral;
+                coralLevel = Elevator.Position.Low_Stow;
         }
 
         public void scheduleOnly(Command command) {
@@ -153,14 +166,16 @@ public class Container {
         public Command teleOuttake() {
                 return Commands.either(
                         Commands.either(
-                                arm.outtakeCoral(),
+                                arm.outtakeCoral(
+                                        coralAngle != Arm.Position.L1_Coral ? -0.8 : 0.3
+                                ),
                                 Commands.sequence(
                                         arm.setPosition(Arm.Position.High_Stow),
                                         elevator.setPosition(coralLevel),
-                                        arm.setPosition(coralLevel == Elevator.Position.L4_Coral ? Arm.Position.L4_Coral : Arm.Position.High_Stow)
+                                        arm.setPosition(coralAngle)
                                 ),
                                 
-                                () -> Utilities.inTolerance(coralLevel.value - elevator.getPosition(), 0.4)
+                                () -> Utilities.inTolerance(coralLevel.value - elevator.getPosition(), 0.4) && Utilities.inTolerance(coralAngle.value - arm.getPosition(), 0.2)
                         ),
                         Commands.either(
                                 Commands.parallel(
@@ -193,9 +208,11 @@ public class Container {
                         Commands.sequence(
                                 arm.setPosition(Arm.Position.High_Stow),
                                 elevator.setPosition(coralLevel),
-                                arm.setPosition(coralLevel == Elevator.Position.L4_Coral ? Arm.Position.L4_Coral : Arm.Position.High_Stow),
+                                arm.setPosition(coralAngle),
                                 Commands.waitSeconds(0.2),
-                                arm.outtakeCoral()
+                                arm.outtakeCoral(
+                                        coralAngle != Arm.Position.L1_Coral ? -0.8 : 0.2
+                                )
                         ),
                         Commands.sequence(
                                 arm.setPosition(Arm.Position.Low_Stow),

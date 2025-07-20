@@ -16,8 +16,9 @@ public class ButtonBoard {
                 Target_Low(3),
                 Target_Medium(4),
                 Target_High(5),
+                Target_Trough(6),
 
-                Reset(7);
+                Reset(8);
 
                 public int value;
 

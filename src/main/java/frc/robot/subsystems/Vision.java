@@ -28,30 +28,11 @@ public class Vision extends SubsystemBase {
                 }
         }
 
-        public int getTagID(Camera camera) {
-                String cameraID = toString(camera);
-                return (int)LimelightHelpers.getNTEntry(cameraID, "tid").getInteger(-1);
-        }
-
-        public double getOffsetX(Camera camera) {
-                String cameraID = toString(camera);
-                double offset = Math.tan(Math.toRadians(LimelightHelpers.getNTEntry(cameraID, "tx").getDouble(0))) * getOffsetY(camera);
-
-                return getTagID(camera) != -1 ? offset : 0;
-        }
-
-        public double getOffsetY(Camera camera) {
-                String cameraID = toString(camera);
-                double offset = 0.75 / Math.tan(Math.toRadians(LimelightHelpers.getNTEntry(cameraID, "ty").getDouble(0)));
-
-                return getTagID(camera) != -1 ? offset : 9;
-        }
-
         public Pose2d getEstimate(Camera camera) {
                 String cameraID = toString(camera);
 
-                Pose2d redEstimate = LimelightHelpers.getRedPoseEstimate(cameraID);
-                Pose2d blueEstimate = LimelightHelpers.getBluePoseEstimate(cameraID);
+                Pose2d redEstimate = LimelightHelpers.getBotPose2d_wpiRed(cameraID);
+                Pose2d blueEstimate = LimelightHelpers.getBotPose2d_wpiBlue(cameraID);
 
                 return Utilities.getAlliance() == Alliance.Red ? redEstimate : blueEstimate;
         }

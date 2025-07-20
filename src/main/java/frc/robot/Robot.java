@@ -108,5 +108,6 @@ public class Robot extends TimedRobot {
                 if (board.getButtonPressed(Action.Target_Low)) container.targetLow();
                 if (board.getButtonPressed(Action.Target_Medium)) container.targetMedium();
                 if (board.getButtonPressed(Action.Target_High)) container.targetHigh();
+                if (board.getButtonPressed(Action.Target_Trough)) container.targetTrough();
         }
 }

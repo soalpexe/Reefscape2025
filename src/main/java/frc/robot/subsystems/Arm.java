@@ -27,6 +27,7 @@ public class Arm extends SubsystemBase {
                 Low_Stow(21),
 
                 Intake_Coral(-0.1),
+                L1_Coral(14),
                 L4_Coral(6),
 
                 Intake_Algae(25),
@@ -120,14 +121,14 @@ public class Arm extends SubsystemBase {
                 };
         }
 
-        public Command outtakeCoral() {
+        public Command outtakeCoral(double power) {
                 return new Command() {
                         public void initialize() {
                                 timer.reset();
                         }
 
                         public void execute() {
-                                rollers.set(-0.8);
+                                rollers.set(power);
                         }
 
                         public boolean isFinished() {
