@@ -124,6 +124,18 @@ public class Container {
                 return drivetrain.driveSpeeds(speeds, slowed);
         }
 
+        public Command alignToPose(Pose2d pose) {
+                Pose2d robotPose = drivetrain.getRobotPose();
+
+                ChassisSpeeds speeds = new ChassisSpeeds(
+                        Constants.Drivetrain.alignTranslationPID.calculate(robotPose.getX(), pose.getX()),
+                        Constants.Drivetrain.alignTranslationPID.calculate(robotPose.getY(), pose.getY()),
+                        -Constants.Drivetrain.alignHeadingPID.calculate(Utilities.getRadians(robotPose), Utilities.getRadians(pose))
+                );
+                
+                return drivetrain.driveSpeeds(speeds);
+        }
+
         public Command stow() {
                 return Commands.either(
                         Commands.sequence(

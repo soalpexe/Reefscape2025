@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.ButtonBoard.Action;
+import frc.robot.subsystems.Vision.Camera;
 
 public class Robot extends TimedRobot {
         CommandScheduler scheduler;
@@ -53,7 +54,7 @@ public class Robot extends TimedRobot {
                 NamedCommands.registerCommand("Outtake", container.autoOuttake());
                 NamedCommands.registerCommand("Stow", container.stow());
 
-                routine = AutoBuilder.buildAuto("2-1Coral");
+                routine = AutoBuilder.buildAuto("1Left-3Coral");
         }
 
         @Override
@@ -63,6 +64,7 @@ public class Robot extends TimedRobot {
                 SmartDashboard.putData(CommandScheduler.getInstance());
                 SmartDashboard.updateValues();
 
+                container.updateRobotPose(container.vision.getEstimate(Camera.Front));
                 container.drivetrain.updateRobotHeight(container.elevator.getPosition());
                 container.updateLEDs();
 
@@ -93,6 +95,10 @@ public class Robot extends TimedRobot {
                         controller.getRightX(),
                         controller.getLeftTriggerAxis() > 0.1
                 ).schedule();
+
+                int side = Utilities.getClosestSide(robotPose, Constants.centerTargets);
+                if (controller.getPOV() == 270) container.scheduleOnly(container.alignToPose(Constants.leftTargets[side]));
+                if (controller.getPOV() == 90) container.scheduleOnly(container.alignToPose(Constants.rightTargets[side]));
                 
                 if (controller.getLeftBumperButtonPressed()) container.scheduleOnly(container.intake());
                 if (controller.getRightBumperButtonPressed()) container.scheduleOnly(container.teleOuttake());

@@ -57,8 +57,8 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                         () -> getState().Speeds,
                         (speeds, feedforwards) -> setRobotControl(speeds),
                         new PPHolonomicDriveController(
-                                Constants.Drivetrain.translationPID,
-                                Constants.Drivetrain.headingPID
+                                Constants.Drivetrain.pathTranslationPID,
+                                Constants.Drivetrain.pathHeadingPID
                         ),
                         config,
                         () -> Utilities.getAlliance() == Alliance.Red

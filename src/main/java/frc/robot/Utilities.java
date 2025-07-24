@@ -24,4 +24,25 @@ public class Utilities {
         public static boolean isValidPose(Pose2d pose) {
                 return !pose.equals(new Pose2d()) && pose != null;
         }
+
+        public static double getDistance(Pose2d current, Pose2d target) {
+                return Math.hypot(target.getX() - current.getX(), target.getY() - current.getY());
+        }
+
+        public static int getClosestSide(Pose2d robotPose, Pose2d[] poses) {
+                int side = 0;
+                double leastDist = Double.MAX_VALUE;
+
+                for (int i = 0; i < poses.length; i++) {
+                        Pose2d pose = poses[i];
+                        double distance = getDistance(robotPose, pose);
+
+                        if (distance < leastDist) {
+                                side = i;
+                                leastDist = distance;
+                        }
+                }
+
+                return side;
+        }
 }
