@@ -13,7 +13,6 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -28,17 +27,10 @@ public class Robot extends TimedRobot {
         ButtonBoard board;
         Container container;
         
-        Pose2d robotPose = new Pose2d();
-        StructPublisher<Pose2d> publisher;
+        Pose2d robotPose = new Pose2d(), leftTarget = new Pose2d(), rightTarget = new Pose2d();
+        StructPublisher<Pose2d> robotPublisher, leftPublisher, rightPublisher;
 
         Command routine;
-        Button[] binds = new Button[] {
-                Button.kLeftBumper,
-                Button.kRightBumper,
-
-                Button.kA,
-                Button.kY
-        }; 
 
         public Robot() {
                 scheduler = CommandScheduler.getInstance();
@@ -48,7 +40,9 @@ public class Robot extends TimedRobot {
                 board = new ButtonBoard(Constants.boardID);
                 container = new Container();
 
-                publisher = NetworkTableInstance.getDefault().getStructTopic("Robot Pose", Pose2d.struct).publish();
+                robotPublisher = NetworkTableInstance.getDefault().getStructTopic("Robot Pose", Pose2d.struct).publish();
+                leftPublisher = NetworkTableInstance.getDefault().getStructTopic("Left Target", Pose2d.struct).publish();
+                rightPublisher = NetworkTableInstance.getDefault().getStructTopic("Right Target", Pose2d.struct).publish();
 
                 NamedCommands.registerCommand("Intake", container.intake());
                 NamedCommands.registerCommand("Outtake", container.autoOuttake());
@@ -69,7 +63,14 @@ public class Robot extends TimedRobot {
                 container.updateLEDs();
 
                 robotPose = container.drivetrain.getRobotPose();
-                publisher.set(robotPose);
+                robotPublisher.set(robotPose);
+
+                int side = Utilities.getClosestSide(robotPose, Constants.centerTargets);
+                leftTarget = Constants.leftTargets[side];
+                rightTarget = Constants.rightTargets[side];
+
+                leftPublisher.set(leftTarget);
+                rightPublisher.set(rightTarget);
         }
 
         @Override
@@ -96,9 +97,8 @@ public class Robot extends TimedRobot {
                         controller.getLeftTriggerAxis() > 0.1
                 ).schedule();
 
-                int side = Utilities.getClosestSide(robotPose, Constants.centerTargets);
-                if (controller.getPOV() == 270) container.scheduleOnly(container.alignToPose(Constants.leftTargets[side]));
-                if (controller.getPOV() == 90) container.scheduleOnly(container.alignToPose(Constants.rightTargets[side]));
+                if (controller.getPOV() == 270) container.scheduleOnly(container.alignToPose(leftTarget));
+                if (controller.getPOV() == 90) container.scheduleOnly(container.alignToPose(rightTarget));
                 
                 if (controller.getLeftBumperButtonPressed()) container.scheduleOnly(container.intake());
                 if (controller.getRightBumperButtonPressed()) container.scheduleOnly(container.teleOuttake());

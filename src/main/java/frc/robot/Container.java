@@ -7,6 +7,7 @@ package frc.robot;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix6.Utils;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
@@ -21,6 +22,7 @@ import frc.robot.subsystems.Arm;
 
 public class Container {
         Drivetrain drivetrain;
+        PIDController translationPID, headingPID;
         
         Arm arm;
         Elevator elevator;
@@ -47,6 +49,10 @@ public class Container {
                         Constants.Drivetrain.backLeftConfigs,
                         Constants.Drivetrain.backRightConfigs
                 );
+                
+                translationPID = new PIDController(Constants.Drivetrain.translationP, Constants.Drivetrain.translationI, Constants.Drivetrain.translationD);
+                headingPID = new PIDController(Constants.Drivetrain.headingP, Constants.Drivetrain.headingI, Constants.Drivetrain.headingD);
+                headingPID.enableContinuousInput(-Math.PI, Math.PI);
 
                 arm = new Arm(Constants.Arm.pivotID, Constants.Arm.rollersID, Constants.Arm.coralRangeID, Constants.Arm.algaeRangeID, Constants.canivoreID);
                 elevator = new Elevator(Constants.Elevator.leftID, Constants.Elevator.rightID);
@@ -116,8 +122,8 @@ public class Container {
         
         public Command driveJoysticks(double leftX, double leftY, double rightX, boolean slowed) {
                 ChassisSpeeds speeds = new ChassisSpeeds(
-                        leftY * Constants.Drivetrain.maxSpeed,
-                        leftX * Constants.Drivetrain.maxSpeed,
+                        -leftY * Constants.Drivetrain.maxSpeed,
+                        -leftX * Constants.Drivetrain.maxSpeed,
                         -rightX * Constants.Drivetrain.maxAngularSpeed
                 );
                 
@@ -128,9 +134,9 @@ public class Container {
                 Pose2d robotPose = drivetrain.getRobotPose();
 
                 ChassisSpeeds speeds = new ChassisSpeeds(
-                        Constants.Drivetrain.alignTranslationPID.calculate(robotPose.getX(), pose.getX()),
-                        Constants.Drivetrain.alignTranslationPID.calculate(robotPose.getY(), pose.getY()),
-                        -Constants.Drivetrain.alignHeadingPID.calculate(Utilities.getRadians(robotPose), Utilities.getRadians(pose))
+                        Math.clamp(translationPID.calculate(robotPose.getX(), pose.getX()), -1, 1),
+                        Math.clamp(translationPID.calculate(robotPose.getY(), pose.getY()), -1, 1),
+                        headingPID.calculate(Utilities.getRadians(robotPose), Utilities.getRadians(pose))
                 );
                 
                 return drivetrain.driveSpeeds(speeds);

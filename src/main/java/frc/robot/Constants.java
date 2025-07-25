@@ -10,9 +10,7 @@ import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.*;
 import com.ctre.phoenix6.swerve.*;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
-import com.pathplanner.lib.config.PIDConstants;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.*;
@@ -25,51 +23,51 @@ public class Constants {
         public static int lightsID = 55;
 
         public static Pose2d[] centerTargets = new Pose2d[] {
-                new Pose2d(3.15, 4.03, new Rotation2d(0)),
-                new Pose2d(3.81, 5.18, new Rotation2d(-60)),
-                new Pose2d(5.16, 5.18, new Rotation2d(-120)),
-                new Pose2d(5.83, 4.03, new Rotation2d(180)),
-                new Pose2d(5.16, 2.87, new Rotation2d(120)),
-                new Pose2d(3.81, 2.87, new Rotation2d(60)),
+                new Pose2d(3.15, 4.03, Rotation2d.fromDegrees(0)),
+                new Pose2d(3.81, 5.18, Rotation2d.fromDegrees(-60)),
+                new Pose2d(5.16, 5.18, Rotation2d.fromDegrees(-120)),
+                new Pose2d(5.83, 4.03, Rotation2d.fromDegrees(180)),
+                new Pose2d(5.16, 2.87, Rotation2d.fromDegrees(120)),
+                new Pose2d(3.81, 2.87, Rotation2d.fromDegrees(60)),
 
-                new Pose2d(11.73, 4.03, new Rotation2d(0)),
-                new Pose2d(12.4, 5.18, new Rotation2d(-60)),
-                new Pose2d(13.73, 5.18, new Rotation2d(-120)),
-                new Pose2d(14.4, 4.03, new Rotation2d(180)),
-                new Pose2d(13.73, 2.87, new Rotation2d(120)),
-                new Pose2d(12.4, 2.87, new Rotation2d(60))
+                new Pose2d(11.73, 4.03, Rotation2d.fromDegrees(0)),
+                new Pose2d(12.4, 5.18, Rotation2d.fromDegrees(-60)),
+                new Pose2d(13.73, 5.18, Rotation2d.fromDegrees(-120)),
+                new Pose2d(14.4, 4.03, Rotation2d.fromDegrees(180)),
+                new Pose2d(13.73, 2.87, Rotation2d.fromDegrees(120)),
+                new Pose2d(12.4, 2.87, Rotation2d.fromDegrees(60))
         };
 
         public static Pose2d[] leftTargets = new Pose2d[] {
-                new Pose2d(3.15, 4.19, new Rotation2d(0)),
-                new Pose2d(3.96, 5.26, new Rotation2d(-60)),
-                new Pose2d(5.3, 5.1, new Rotation2d(-120)),
-                new Pose2d(5.82, 3.86, new Rotation2d(180)),
-                new Pose2d(5.01, 2.78, new Rotation2d(120)),
-                new Pose2d(3.68, 2.95, new Rotation2d(60)),
+                new Pose2d(3.15, 4.19, Rotation2d.fromDegrees(0)),
+                new Pose2d(3.96, 5.26, Rotation2d.fromDegrees(-60)),
+                new Pose2d(5.3, 5.1, Rotation2d.fromDegrees(-120)),
+                new Pose2d(5.82, 3.86, Rotation2d.fromDegrees(180)),
+                new Pose2d(5.01, 2.78, Rotation2d.fromDegrees(120)),
+                new Pose2d(3.68, 2.95, Rotation2d.fromDegrees(60)),
                 
-                new Pose2d(11.73, 4.19, new Rotation2d(0)),
-                new Pose2d(12.54, 5.26, new Rotation2d(-60)),
-                new Pose2d(13.88, 5.1, new Rotation2d(-120)),
-                new Pose2d(14.4, 3.86, new Rotation2d(180)),
-                new Pose2d(13.59, 2.78, new Rotation2d(120)),
-                new Pose2d(12.25, 2.95, new Rotation2d(60))
+                new Pose2d(11.73, 4.19, Rotation2d.fromDegrees(0)),
+                new Pose2d(12.54, 5.26, Rotation2d.fromDegrees(-60)),
+                new Pose2d(13.88, 5.1, Rotation2d.fromDegrees(-120)),
+                new Pose2d(14.4, 3.86, Rotation2d.fromDegrees(180)),
+                new Pose2d(13.59, 2.78, Rotation2d.fromDegrees(120)),
+                new Pose2d(12.25, 2.95, Rotation2d.fromDegrees(60))
         };
 
         public static Pose2d[] rightTargets = new Pose2d[] {
-                new Pose2d(3.15, 3.86, new Rotation2d(0)),
-                new Pose2d(3.68, 5.1, new Rotation2d(-60)),
-                new Pose2d(5.01, 5.26, new Rotation2d(-120)),
-                new Pose2d(5.82, 4.19, new Rotation2d(180)),
-                new Pose2d(5.3, 2.95, new Rotation2d(120)),
-                new Pose2d(3.96, 2.78, new Rotation2d(60)),
+                new Pose2d(3.15, 3.86, Rotation2d.fromDegrees(0)),
+                new Pose2d(3.68, 5.1, Rotation2d.fromDegrees(-60)),
+                new Pose2d(5.01, 5.26, Rotation2d.fromDegrees(-120)),
+                new Pose2d(5.82, 4.19, Rotation2d.fromDegrees(180)),
+                new Pose2d(5.3, 2.95, Rotation2d.fromDegrees(120)),
+                new Pose2d(3.96, 2.78, Rotation2d.fromDegrees(60)),
                 
-                new Pose2d(11.73, 3.86, new Rotation2d(0)),
-                new Pose2d(12.25, 5.1, new Rotation2d(-60)),
-                new Pose2d(13.59, 5.26, new Rotation2d(-120)),
-                new Pose2d(14.4, 4.19, new Rotation2d(180)),
-                new Pose2d(13.88, 2.95, new Rotation2d(120)),
-                new Pose2d(12.54, 2.78, new Rotation2d(60))
+                new Pose2d(11.73, 3.86, Rotation2d.fromDegrees(0)),
+                new Pose2d(12.25, 5.1, Rotation2d.fromDegrees(-60)),
+                new Pose2d(13.59, 5.26, Rotation2d.fromDegrees(-120)),
+                new Pose2d(14.4, 4.19, Rotation2d.fromDegrees(180)),
+                new Pose2d(13.88, 2.95, Rotation2d.fromDegrees(120)),
+                new Pose2d(12.54, 2.78, Rotation2d.fromDegrees(60))
         };
 
         public class Drivetrain {
@@ -82,11 +80,8 @@ public class Constants {
 
                 public static Rotation2d redPerspective = Rotation2d.kZero, bluePerspective = Rotation2d.k180deg;
                 
-                public static PIDConstants pathTranslationPID = new PIDConstants(5, 0, 0); 
-                public static PIDConstants pathHeadingPID = new PIDConstants(5, 0, 0); 
-
-                public static PIDController alignTranslationPID = new PIDController(5, 0, 0);
-                public static PIDController alignHeadingPID = new PIDController(5, 0, 0);
+                public static double translationP = 5, translationI = 0.1, translationD = 0;
+                public static double headingP = 5, headingI = 0, headingD = 0;
 
                 static TalonFXConfiguration driveConfigs = new TalonFXConfiguration();
                 static TalonFXConfiguration steerConfigs = new TalonFXConfiguration().withCurrentLimits(

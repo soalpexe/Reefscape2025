@@ -12,6 +12,7 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
@@ -57,8 +58,8 @@ public class Drivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                         () -> getState().Speeds,
                         (speeds, feedforwards) -> setRobotControl(speeds),
                         new PPHolonomicDriveController(
-                                Constants.Drivetrain.pathTranslationPID,
-                                Constants.Drivetrain.pathHeadingPID
+                                new PIDConstants(Constants.Drivetrain.translationP, Constants.Drivetrain.translationI, Constants.Drivetrain.translationD),
+                                new PIDConstants(Constants.Drivetrain.headingP, Constants.Drivetrain.headingI, Constants.Drivetrain.headingD)
                         ),
                         config,
                         () -> Utilities.getAlliance() == Alliance.Red
