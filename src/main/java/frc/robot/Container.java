@@ -7,6 +7,7 @@ package frc.robot;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix6.Utils;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -134,8 +135,8 @@ public class Container {
                 Pose2d robotPose = drivetrain.getRobotPose();
 
                 ChassisSpeeds speeds = new ChassisSpeeds(
-                        Math.clamp(translationPID.calculate(robotPose.getX(), pose.getX()), -1, 1),
-                        Math.clamp(translationPID.calculate(robotPose.getY(), pose.getY()), -1, 1),
+                        MathUtil.clamp(translationPID.calculate(robotPose.getX(), pose.getX()), -1, 1),
+                        MathUtil.clamp(translationPID.calculate(robotPose.getY(), pose.getY()), -1, 1),
                         headingPID.calculate(Utilities.getRadians(robotPose), Utilities.getRadians(pose))
                 );
                 

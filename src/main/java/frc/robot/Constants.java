@@ -80,7 +80,7 @@ public class Constants {
 
                 public static Rotation2d redPerspective = Rotation2d.kZero, bluePerspective = Rotation2d.k180deg;
                 
-                public static double translationP = 5, translationI = 0.1, translationD = 0;
+                public static double translationP = 10, translationI = 0, translationD = 0;
                 public static double headingP = 5, headingI = 0, headingD = 0;
 
                 static TalonFXConfiguration driveConfigs = new TalonFXConfiguration();
