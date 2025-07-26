@@ -197,25 +197,28 @@ public class Container {
                                 () -> Utilities.inTolerance(coralLevel.value - elevator.getPosition(), 0.4) && Utilities.inTolerance(coralAngle.value - arm.getPosition(), 0.2)
                         ),
                         Commands.either(
-                                Commands.parallel(
-                                        elevator.setPosition(Elevator.Position.End_Barge),
-                                        arm.setPosition(Arm.Position.High_Stow),
-                                        Commands.sequence(
-                                                Commands.waitSeconds(0.5),
-                                                arm.outtakeAlgae(-1)
+                                Commands.sequence(
+                                        elevator.setPosition(Elevator.Position.High_Algae),
+                                        Commands.parallel(
+                                                elevator.setPosition(Elevator.Position.End_Barge),
+                                                arm.setPosition(Arm.Position.High_Stow),
+                                                Commands.sequence(
+                                                        Commands.waitSeconds(0.5),
+                                                        arm.outtakeAlgae(-1)
+                                                )
                                         )
                                 ),
                                 Commands.either(
                                         arm.outtakeAlgae(-0.6),
                                         Commands.sequence(
-                                                elevator.setPosition(Elevator.Position.High_Algae),
+                                                elevator.setPosition(Elevator.Position.End_Barge),
                                                 arm.setPosition(Arm.Position.Start_Barge)
                                         ),
 
                                         () -> Utilities.inTolerance(Elevator.Position.High_Stow.value - elevator.getPosition(), 0.4)
                                 ),
 
-                                () -> Utilities.inTolerance(Elevator.Position.High_Algae.value - elevator.getPosition(), 0.4)
+                                () -> Utilities.inTolerance(Elevator.Position.End_Barge.value - elevator.getPosition(), 0.4)
                         ),
 
                         () -> mode == Mode.Coral
